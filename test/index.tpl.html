@@ -1,0 +1,59 @@
+<!doctype html>
+<html>
+<head>
+	<meta charset="utf-8">
+	<title>Test CPP class</title>
+
+	<script src="../node_modules/mocha/mocha.js" charset="utf-8"></script>
+	<script src="../node_modules/chai/chai.js" charset="utf-8"></script>
+	<script src="../node_modules/sinon/pkg/sinon.js" charset="utf-8"></script>
+
+	<link rel="stylesheet" href="../node_modules/mocha/mocha.css" type="text/css" media="screen" title="no title" charset="utf-8">
+</head>
+<body>
+	<div id="mocha"></div>
+
+	<script type="text/javascript" charset="utf-8">
+		function appendScript(src) {
+			var script = document.createElement('script');
+			script.charset = 'utf-8';
+			script.src = src;
+
+			document.body.appendChild(script);
+		}
+
+		window.assert = chai.assert;
+		window.sinon = sinon;
+
+		mocha.setup({
+			ui: 'tdd',
+			bail: false
+		});
+
+		var components = [
+			'utils',
+			'FClass',
+			'Class',
+			'SingletonClass'
+		];
+		
+		// add lib files
+		components.forEach(function(component) {
+			appendScript('<%= jsFolder %>/' + component + '.js');
+		});
+
+		// add test files
+		components.forEach(function(component) {
+			appendScript(component + '.js');
+		});
+	</script>
+
+	<script type="text/javascript" charset="utf-8">
+		// I don't know why but this works without strange buggy behavior by running from PhantomJS,
+		// than using "run: true" option in Grunt task
+		setTimeout(function(){
+			mocha.run();
+		}, 0);
+	</script>
+</body>
+</html>

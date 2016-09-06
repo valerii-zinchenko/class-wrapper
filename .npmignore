@@ -1,0 +1,9 @@
+# exclude files
+npm-debug.log
+test/index.html
+
+# exclude folders
+node_modules/
+js-cov/
+coverage/
+doc/
