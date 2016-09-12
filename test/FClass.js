@@ -9,150 +9,290 @@
 'use strict';
 
 suite('FClass', function() {
-	suite('Input arguments', function() {
-		test('No arguments', function() {
-			assert.throw(function() {
-				new FClass();
-			}, Error, 'Incorrect input arguments. Constructor function is not defined');
+	suite('Input arguments are', function() {
+		suite('incorrect when', function() {
+			[].concat([
+				{
+					title: 'No arguments',
+					input: []
+				},
+				{
+					title: 'One argument',
+					input: [1]
+				}],
+				[undefined, null, false, 1, '', [], {}].map(function(type){
+					return {
+						title: 'type of Constructor argument: ' + Object.prototype.toString.call(type),
+						input: [type, {}]
+					}
+				}),
+				[undefined, null, false, 1, '', [], function(){}].map(function(type){
+					return {
+						title: 'type of class properties: ' + Object.prototype.toString.call(type),
+						input: [function(){}, type]
+					}
+				}),
+				[undefined, null, false, 1, '', [], {}].map(function(type){
+					return {
+						title: 'type of parent class: ' + Object.prototype.toString.call(type),
+						input: [function(){}, type, {}]
+					}
+				}),
+				[undefined, null, false, 1, '', []].map(function(type){
+					return {
+						title: 'type of being encapsulated class: ' + Object.prototype.toString.call(type),
+						input: [function(){}, function(){}, type, {}]
+					}
+				}),
+				[undefined, null, false, 1, '', []].map(function(type){
+					return {
+						title: 'type of a third from four being encapsulated classes: ' + Object.prototype.toString.call(type),
+						input: [function(){}, function(){}, {}, function(){}, type, {}, {}]
+					}
+				})
+			).forEach(function(testCase){
+				test(testCase.title, function() {
+					assert.throw(function() {
+						FClass.apply(null, testCase.input);
+					}, Error, 'Incorrect input arguments. It should be: FClass(Function, [Function], [Function | Object]*, Object)');
+				});
+			});
 		});
-		test('Incorrect type of input argument', function(){
-			assert.throw(function() {
-				new FClass(2);
-			}, Error, 'Constructor should be an function');
-		});
-		test('Correct input arguments', function() {
-			assert.doesNotThrow(function() {
-				new FClass(function() {});
+
+		suite('correct with', function() {
+			[
+				{
+					title: 'constructor function and object of properties and methods',
+					input: [function(){}, {}]
+				},
+				{
+					title: 'constructor function, parent class and object of properties and methods',
+					input: [function(){}, function(){}, {}]
+				},
+				{
+					title: 'constructor function, parent class, objects/functions being encapsulated and object of properties and methods',
+					input: [function(){}, function(){}, {}, function(){}, {}, {}, {}]
+				}
+			].forEach(function(testCase){
+				test(testCase.title, function() {
+					assert.doesNotThrow(function() {
+						FClass.apply(null, testCase.input);
+					});
+				});
 			});
 		});
 	});
 
-	suite('Test returned class constructor', function() {
-		var SomeClassBuilder;
-		setup(function() {
-			SomeClassBuilder = new FClass(function(){});
-		});
-		teardown(function(){
-			SomeClassBuilder = null;
+	suite('Resulting class constructor', function(){
+		test('Cloning of a constructor function', function(){
+			var constructorFn = function(){};
+			var Parent = function(){};
+
+			var result;
+			assert.doesNotThrow(function(){
+				result = FClass(constructorFn, Parent, {});
+			});
+
+			assert.notEqual(result, constructorFn, 'Resulting constructor function should not be equal to the input constructor function to avoid data sharing.');
+			assert.equal(result.parent, Parent.prototype, 'Reference to the prototype of a parent class is lost');
+			assert.equal(result.prototype.constructor, result, 'Class constructor function should be saved and used as constructor for a new class instead of a parent\'s constructor function');
+			assert.instanceOf(result.prototype, Parent, 'New class prototype should be an instance of Parent class to save the inheritance chain');
+			assert.isObject(result.prototype._defaults, '"_defaults" should be created to store there the default values of own variables');
 		});
 
-		test('Create new class without any properties and methods', function(){
-			assert.throw(function(){
-				new (new SomeClassBuilder())();
-			}, Error, 'Incorrect input arguments. It should be: new Class([Function], [Function | Object]*, Object)');
-		});
-		test('Incorrect input argument(s)', function() {
-			assert.throw(function() {
-				new SomeClassBuilder(Object);
-			}, Error, 'Incorrect input arguments. It should be: new Class([Function], [Function | Object]*, Object)');
-			assert.throw(function() {
-				new SomeClassBuilder(11);
-			}, Error, 'Incorrect input arguments. It should be: new Class([Function], [Function | Object]*, Object)');
-			assert.throw(function() {
-				new SomeClassBuilder(Object, 11);
-			}, Error, 'Incorrect input arguments. It should be: new Class([Function], [Function | Object]*, Object)');
-		});
-		test('Correct input argument(s)', function() {
-			assert.doesNotThrow(function() {
-				new SomeClassBuilder({});
-			});
-			assert.doesNotThrow(function() {
-				new SomeClassBuilder(Object, {});
-			});
-		});
-
-		test('Test types and values of the properties', function() {
-			var obj = new (new SomeClassBuilder({
+		test('properties for a new class', function() {
+			var properties = {
 				number: 1,
 				string: ':)',
 				bool: true,
 				nullValue: null,
 				array: [0,1],
-				obj: {
-					v: 11
+				nestedObj: {
+					innerObj: {
+						v: 11
+					},
+					prop: 4
 				},
 				fn: function() {return this.number;}
-			}))();
+			};
 
-			assert.isNumber(obj._defaults.number, 'Number type was not saved');
-			assert.isString(obj._defaults.string, 'String type was not saved');
-			assert.isBoolean(obj._defaults.bool, 'Boolean type was not saved');
-			assert.isNull(obj._defaults.nullValue, 'Null type was not saved');
-			assert.isArray(obj._defaults.array, 'Array type was not saved');
-			assert.isObject(obj._defaults.obj, 'Object type was not saved');
-			assert.isFunction(obj.fn, 'Function type was not saved');
+			var result;
+			assert.doesNotThrow(function(){
+				result = FClass(function(){}, properties);
+			});
 
-			assert.equal(obj._defaults.number, 1);
-			assert.equal(obj._defaults.string, ':)');
-			assert.equal(obj._defaults.bool, true);
-			assert.isTrue(obj._defaults.array[0] === 0 && obj._defaults.array[1] === 1);
-			assert.equal(obj._defaults.obj.v, 11);
+			assert.equal(result.prototype._defaults.number, properties.number, 'Simple Number was incorrectly copied');
+			assert.equal(result.prototype._defaults.string, properties.string, 'Simple String was incorrectly copied');
+			assert.equal(result.prototype._defaults.bool, properties.bool, 'Simple boolean was incorrectly copied');
+			assert.isNull(result.prototype._defaults.nullValue, 'Null type was not copied');
+
+			assert.isArray(result.prototype._defaults.array, 'Array type was not copied');
+			assert.isTrue(result.prototype._defaults.array[0] === properties.array[0] && result.prototype._defaults.array[1] === properties.array[1], 'Array items was incorrectly copied');
+
+			assert.isObject(result.prototype._defaults.nestedObj, 'Object type was not saved');
+			assert.notEqual(result.prototype._defaults.nestedObj, properties.nestedObj, 'Object from a properties should be shared');
+			assert.isObject(result.prototype._defaults.nestedObj.innerObj, 'Inner object was not saved');
+			assert.notEqual(result.prototype._defaults.nestedObj.innerObj, properties.nestedObj.innerObj, 'Inner nested object from a properties should be shared');
+			assert.equal(result.prototype._defaults.nestedObj.innerObj.v, properties.nestedObj.innerObj.v, 'Value of most inner object was not copied');
+			assert.equal(result.prototype._defaults.nestedObj.prop, properties.nestedObj.prop, 'Object properties was incorrectly copied');
+
+			assert.isFunction(result.prototype.fn, 'All functions should be saved in prototype for desired reuse');
+			assert.equal(result.prototype.fn, properties.fn, 'Functions should be shared');
 		});
 
-		suite('Encapsulation', function(){
-			test('encapsulate some class into new one', function(){
-				var SomeClass = new SomeClassBuilder({
-					prop: 'property',
-					object: {
-						objprop: 'objprop'
-					},
-					method: function(){}
-				});
-				var properties = {
-					object: {
-						someprop: 'someprop'
-					}
-				};
+		suite('Encapsulate', function(){
+			var fns = {
+				method: function(){},
+				method2: function(){}
+			};
 
-				var result;
-				assert.doesNotThrow(function(){
-					result = new (new SomeClassBuilder(Object, SomeClass, properties))();
-				});
-
-				assert.equal(result._defaults.prop, SomeClass.prototype._defaults.prop, 'Property of some class should be encapsulated into the new class');
-				assert.equal(result.method, SomeClass.prototype.method, 'Method of some class should be encapsulated into the new class');
-				assert.notEqual(result._defaults.object, SomeClass.prototype._defaults, 'Object properties should not be encapsulated over reference, the should be cloned in the new class');
-				assert.equal(result._defaults.object.objprop, SomeClass.prototype._defaults.object.objprop, 'Object property was incorrectly cloned/extended into the new class');
-				assert.equal(result._defaults.object.someprop, properties.object.someprop, 'Encapsulated object was incorreclt merged into the new class');
-			});
-
-			test('encapsulate an object/class over object property "Encapsulate"', function(){
-				var properties = {
-					prop: 'prop',
-					Encapsulate: {
-						prop2: 'prop2'
-					}
-				};
-
-				var result;
-				assert.doesNotThrow(function(){
-					result = new (new SomeClassBuilder(properties));
-				});
-
-				assert.isDefined(result._defaults.prop2, 'Encapsulated object was not encapsulated into the new class');
-				assert.isUndefined(result._defaults.Encapsulate, '"Encapsulate" property should not be encapsulated into the new class');
-			});
-
-			test('encapsulate array of objects/classes over object property "Encapsulate"', function(){
-				var properties = {
-					Encapsulate: [
-						{
+			[
+				{
+					title: 'one simple object',
+					input: [{
+						prop: 'prop',
+						method: fns.method
+					}, {}],
+					expected: {
+						properties: {
 							prop: 'prop'
 						},
-						{
-							prop2: 'prop2'
+						methods: {
+							method: fns.method
 						}
-					]
-				};
+					}
+				},
+				{
+					title: 'two simple objects',
+					input: [
+						{
+							prop: 'prop',
+							method: fns.method
+						},
+						{
+							prop2: 'PROP'
+						},
+					{}],
+					expected: {
+						properties: {
+							prop: 'prop',
+							prop2: 'PROP'
+						},
+						methods: {
+							method: fns.method
+						}
+					}
+				},
+				{
+					title: 'one class created by FClass',
+					input: [FClass(function(){}, {
+						prop: 'prop',
+						method: fns.method
+					}), {}],
+					expected: {
+						properties: {
+							prop: 'prop'
+						},
+						methods: {
+							method: fns.method
+						}
+					}
+				},
+				{
+					title: 'one object from "Encapsulate" property',
+					input: [{
+						Encapsulate: {
+							prop: 'prop',
+							method: fns.method
+						}
+					}],
+					expected: {
+						properties: {
+							prop: 'prop'
+						},
+						methods: {
+							method: fns.method
+						}
+					}
+				},
+				{
+					title: 'two objects from "Encapsulate" property',
+					input: [{
+						Encapsulate: [
+							{
+								prop: 'prop',
+								method: fns.method
+							},
+							{
+								prop2: 'prop2',
+								method2: fns.method2
+							}
+						]
+					}],
+					expected: {
+						properties: {
+							prop: 'prop',
+							prop2: 'prop2'
+						},
+						methods: {
+							method: fns.method,
+							method2: fns.method2
+						}
+					}
+				},
+				{
+					title: 'two objects over input arguments and two objects from "Encapsulate" property with interference (the last one should have a precedence)',
+					input: [
+						{
+							prop: 'v1',
+							method: fns.method
+						},
+						{
+							prop: 'v2',
+							prop2: 'vv1',
+							method2: fns.method2
+						},
+						{Encapsulate: [
+							{
+								prop: 'v3',
+								prop3: 'vvv1',
+								method2: fns.method
+							},
+							{
+								prop2: 'vv2',
+								method: fns.method2,
+								method2: fns.method
+							}
+						]}
+					],
+					expected: {
+						properties: {
+							prop: 'v3',
+							prop2: 'vv2',
+							prop3: 'vvv1'
+						},
+						methods: {
+							method: fns.method2,
+							method2: fns.method
+						}
+					}
+				}
+			].forEach(function(testCase){
+				test(testCase.title, function(){
+					testCase.input.unshift(function(){}, function(){});
 
-				var result;
-				assert.doesNotThrow(function(){
-					result = new (new SomeClassBuilder(properties));
+					var result;
+					assert.doesNotThrow(function(){
+						result = FClass.apply(null, testCase.input);
+					});
+
+					assert.deepEqual(result.prototype._defaults, testCase.expected.properties, 'Properties were incorrectly encapsulated');
+
+					for (var method in testCase.expected.methods) {
+						assert.isFunction(result.prototype[method], method + ' was not encapsulated');
+						assert.equal(result.prototype[method], testCase.expected.methods[method], method + ' was incorrectly encapsulated');
+					};
 				});
-
-				assert.isDefined(result._defaults.prop, 'First encapsulated object was not encapsulated into the new class');
-				assert.isDefined(result._defaults.prop2, 'Second encapsulated object was not encapsulated into the new class');
-				assert.isUndefined(result._defaults.Encapsulate, '"Encapsulate" property should not be encapsulated into the new class');
 			});
 		});
 	});
