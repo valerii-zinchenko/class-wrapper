@@ -296,4 +296,23 @@ suite('FClass', function() {
 			});
 		});
 	});
+
+	test('Inheritance chain', function(){
+		var GrandParent;
+		var Parent;
+		var Child;
+
+		var result;
+		assert.doesNotThrow(function(){
+			GrandParent = FClass(function(){}, {});
+			Parent = FClass(function(){}, GrandParent, {});
+			Child = FClass(function(){}, Parent, {});
+
+			result = new Child();
+		});
+
+		assert.instanceOf(result, Child, 'Resulting instance should be an instance of Child class');
+		assert.instanceOf(result, Parent, 'Resulting instance should be an instance of Parent class, because Child class is inherited from Parent class');
+		assert.instanceOf(result, GrandParent, 'Resulting instance should be an instance of GrandParent class, because Parent class is inherited from GrandParent class and because Child class is inherited from Parent class');
+	});
 });
