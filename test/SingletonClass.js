@@ -8,42 +8,39 @@
 
 
 suite('SingletonClass', function() {
-	test('initialize()', function() {
-		assert.doesNotThrow(function() {
-			new (new SingletonClass({}))();
+	test('creating an instance without any specified constructor', function(){
+		assert.doesNotThrow(function(){
+			new (SingletonClass({}));
 		});
-		assert.throw(function() {
-			new (new SingletonClass({
-				initialize: function() {
-					throw 'OK';
-				}
+	});
+
+	test('calling of specific constructor', function() {
+		var spy = sinon.spy();
+		assert.doesNotThrow(function() {
+			new (SingletonClass({
+				initialize: spy
 			}))();
-		}, 'OK');
-	});
-
-	test('Check constructor', function() {
-		var Obj = new SingletonClass({});
-		assert.equal(Obj, (new Obj()).constructor);
-	});
-
-	test('SingletonClass class should behave as singleton', function() {
-		var Obj = new SingletonClass({});
-		assert.equal(new Obj(), new Obj());
-	});
-
-	test('Second calling of initialize() for Singleton object', function() {
-		var Obj = new SingletonClass({
-			initialize: function() {
-				throw 'OK';
-			}
 		});
 
-		assert.throw(function() {
-			new Obj();
-		}, 'OK');
-		assert.doesNotThrow(function() {
-			new Obj();
-		})
+		assert.isTrue(spy.calledOnce, 'initialize() is treated as a specific class constructor and it should be called by creating new class instance');
+	});
+
+	test('SingletonClass class should always produce the same instance', function() {
+		var constructorFn = sinon.spy();
+		var inst1;
+		var inst2;
+
+		assert.doesNotThrow(function(){
+			var Obj = SingletonClass({
+				initialize: constructorFn
+			});
+
+			inst1 = new Obj();
+			inst2 = new Obj();
+		});
+
+		assert.equal(inst1, inst2, 'SingletonClass should always produce the same instance');
+		assert.isTrue(constructorFn.calledOnce, 'ScingletonClass should call constructor only once, then it should return already created instance');
 	});
 
 	test('Calling of parent initialize()', function() {
@@ -62,5 +59,39 @@ suite('SingletonClass', function() {
 		});
 
 		assert.equal((new Child()).value, value*k);
+	});
+
+	test('Iheritance', function(){
+		var GrandParentClass;
+		var ParentClass;
+		var ChildClass;
+
+		var result;
+		assert.doesNotThrow(function(){
+			GrandParentClass = SingletonClass({});
+			ParentClass = Class(GrandParentClass, {});
+			ChildClass = Class(ParentClass, {});
+
+			result = new ChildClass();
+		});
+
+		assert.instanceOf(result, ChildClass, 'Resulting instance should be an instance of ChildClass');
+		assert.instanceOf(result, ParentClass, 'Resulting instance should be an instance of ParentClass, because ParentClass is a parent class of the ChildClass');
+		assert.instanceOf(result, GrandParentClass, 'Resulting instance should be an instance of GrandParentClass, because GrandParentClass is a parent class of ParentClass and ParentClass is a parent class of ChildClass');
+	});
+
+	test('Instance independance', function(){
+		var parentInst;
+		var childInst;
+
+		assert.doesNotThrow(function(){
+			var Parent = SingletonClass({});
+			var Child = SingletonClass(Parent, {});
+
+			parentInst = new Parent();
+			childInst = new Child();
+		});
+
+		assert.notEqual(childInst, parentInst, 'Instance from the parent class should not be shared by creating an instance from a child class');
 	});
 });
