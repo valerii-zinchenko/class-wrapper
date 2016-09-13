@@ -184,6 +184,37 @@ suite('FClass', function() {
 					}
 				},
 				{
+					title: 'two simple objects with different properties of inner object',
+					input: [
+						{
+							prop: 'prop',
+							obj: {
+								prp: 'prp'
+							},
+							method: fns.method
+						},
+						{
+							prop2: 'PROP',
+							obj: {
+								prp2: 'prp2'
+							},
+						},
+					{}],
+					expected: {
+						properties: {
+							prop: 'prop',
+							prop2: 'PROP',
+							obj: {
+								prp: 'prp',
+								prp2: 'prp2'
+							}
+						},
+						methods: {
+							method: fns.method
+						}
+					}
+				},
+				{
 					title: 'one class created by FClass',
 					input: [FClass(function(){}, {
 						prop: 'prop',
