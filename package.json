@@ -1,11 +1,11 @@
 {
-  "name": "cpp-class",
-  "version": "0.9.0",
-  "description": "Class factory with similar behavior to classes in C++",
-  "main": "lib/cpp-class.js",
+  "name": "class-wrapper",
+  "version": "0.9.1",
+  "description": "Set of wrappers for easier creation of different kinds of classes",
+  "main": "lib/FClass.js",
   "author": "Valerii Zinchenko",
   "license": "MIT",
-  "repository": "valerii-zinchenko/cpp-class",
+  "repository": "valerii-zinchenko/class-wrapper",
   "scripts": {
     "prepublish": "grunt build"
   },
