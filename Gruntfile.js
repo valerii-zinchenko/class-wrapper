@@ -1,9 +1,10 @@
 module.exports = function(grunt) {
 	require('load-grunt-tasks')(grunt);
 
-	var banner = '// CPP class v<%= pkg.version %>\n' +
+	var banner = '// <%= pkg.description %>\n'+
+				 '// v<%= pkg.version %>\n' +
 				 '// Copyright (c) 2016  Valerii Zinchenko\n' +
-				 '// License: http://valerii-zinchenko.github.io/cpp-class/LICENSE.txt\n' +
+				 '// License: http://valerii-zinchenko.github.io/<%= pkg.name %>/LICENSE.txt\n' +
 				 '// All source files are available at: http://github.com/<%= pkg.repository %>\n';
 
 	grunt.initConfig({
@@ -11,23 +12,38 @@ module.exports = function(grunt) {
 
 		concat: {
 			options: {
-				separator: ';\n',
+				separator: '\n',
 				banner: banner
 			},
 			dest: {
-				src: ['lib/utils.js', 'lib/FClass.js', 'lib/Class.js', 'lib/SingletonClass.js', 'lib/cpp-class.js'],
-				dest: 'dest/cpp-class.js'
+				src: ['lib/utils.js', 'lib/FClass.js', 'lib/Class.js', 'lib/SingletonClass.js'],
+				dest: 'dest/<%= pkg.name %>.js'
 			}
 		},
 
 		wrap: {
 			amd: {
-				src: ['dest/cpp-class.js'],
-				dest: 'dest/cpp-class_amd.js',
+				src: ['dest/<%= pkg.name %>.js'],
+				dest: 'dest/<%= pkg.name %>_amd.js',
 				options: {
 					wrapper: [
-						'define("cppClass", [], function() {',
-						'return cppClass;});'
+						'(function (root, factory) {\n' +
+						'	if(typeof define === "function" && define.amd) {\n' +
+						'		define([], factory);\n' +
+						'	} else if(typeof module === "object" && module.exports) {\n' +
+						'		module.exports = factory();\n' +
+						'	} else {\n' +
+						'		root.classWrappers = factory();\n' +
+						'	}\n' +
+						'})(this, function() {',
+						// code will be placed right here
+						'	return {\n' +
+						'		utils: utils,\n' +
+						'		FClass: FClass,\n' +
+						'		Class: Class,\n' +
+						'		SingletonClass: SingletonClass\n' +
+						'	};\n' +
+						'});'
 					]
 				}
 			}
@@ -39,8 +55,8 @@ module.exports = function(grunt) {
 			},
 			dist: {
 				files: {
-					'dest/cpp-class.min.js': 'dest/cpp-class.js',
-					'dest/cpp-class_amd.min.js': 'dest/cpp-class_amd.js',
+					'dest/<%= pkg.name %>.min.js': 'dest/<%= pkg.name %>.js',
+					'dest/<%= pkg.name %>_amd.min.js': 'dest/<%= pkg.name %>_amd.js',
 				}
 			}
 		},
@@ -113,7 +129,8 @@ module.exports = function(grunt) {
 		},
 
 		clean: {
-			coverage: ['js-cov']
+			coverage: ['js-cov'],
+			build: ['dest']
 		}
 	});
 
@@ -136,8 +153,12 @@ module.exports = function(grunt) {
 	});
 
 
-	grunt.registerTask('build', ['concat', 'wrap', 'uglify']);
-	grunt.registerTask('test', ['template:test', 'mocha:test']);
-	grunt.registerTask('coverage', ['prepareForCoverage', 'template:coverage', 'mocha:coverage', 'clean']);
-	grunt.registerTask('doc', ['jsdoc']);
+	[
+		['build', ['clean', 'concat', 'wrap', 'uglify']],
+		['test', ['template:test', 'mocha:test']],
+		['coverage', ['prepareForCoverage', 'template:coverage', 'mocha:coverage', 'clean:coverage']],
+		['doc', ['jsdoc']]
+	].forEach(function(registry){
+		grunt.registerTask(registry[0], registry[1]);
+	});
 };
