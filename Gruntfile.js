@@ -154,7 +154,7 @@ module.exports = function(grunt) {
 
 
 	[
-		['build', ['clean', 'concat', 'wrap', 'uglify']],
+		['build', ['clean', 'concat', 'wrap', 'uglify', 'template:test']],
 		['test', ['template:test', 'mocha:test']],
 		['coverage', ['prepareForCoverage', 'template:coverage', 'mocha:coverage', 'clean:coverage']],
 		['doc', ['jsdoc']]
