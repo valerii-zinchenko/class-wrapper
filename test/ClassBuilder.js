@@ -8,7 +8,7 @@
 
 'use strict';
 
-suite('FClass', function() {
+suite('ClassBuilder', function() {
 	suite('Input arguments are', function() {
 		suite('incorrect when', function() {
 			[].concat([
@@ -53,8 +53,8 @@ suite('FClass', function() {
 			).forEach(function(testCase){
 				test(testCase.title, function() {
 					assert.throw(function() {
-						FClass.apply(null, testCase.input);
-					}, Error, 'Incorrect input arguments. It should be: FClass(Function, [Function], [Function | Object]*, Object)');
+						ClassBuilder.apply(null, testCase.input);
+					}, Error, 'Incorrect input arguments. It should be: ClassBuilder(Function, [Function], [Function | Object]*, Object)');
 				});
 			});
 		});
@@ -76,7 +76,7 @@ suite('FClass', function() {
 			].forEach(function(testCase){
 				test(testCase.title, function() {
 					assert.doesNotThrow(function() {
-						FClass.apply(null, testCase.input);
+						ClassBuilder.apply(null, testCase.input);
 					});
 				});
 			});
@@ -90,7 +90,7 @@ suite('FClass', function() {
 
 			var result;
 			assert.doesNotThrow(function(){
-				result = FClass(constructorFn, Parent, {});
+				result = ClassBuilder(constructorFn, Parent, {});
 			});
 
 			assert.notEqual(result, constructorFn, 'Resulting constructor function should not be equal to the input constructor function to avoid data sharing.');
@@ -118,7 +118,7 @@ suite('FClass', function() {
 
 			var result;
 			assert.doesNotThrow(function(){
-				result = FClass(function(){}, properties);
+				result = ClassBuilder(function(){}, properties);
 			});
 
 			assert.equal(result.prototype._defaults.number, properties.number, 'Simple Number was incorrectly copied');
@@ -215,8 +215,8 @@ suite('FClass', function() {
 					}
 				},
 				{
-					title: 'one class created by FClass',
-					input: [FClass(function(){}, {
+					title: 'one class created by ClassBuilder',
+					input: [ClassBuilder(function(){}, {
 						prop: 'prop',
 						method: fns.method
 					}), {}],
@@ -314,7 +314,7 @@ suite('FClass', function() {
 
 					var result;
 					assert.doesNotThrow(function(){
-						result = FClass.apply(null, testCase.input);
+						result = ClassBuilder.apply(null, testCase.input);
 					});
 
 					assert.deepEqual(result.prototype._defaults, testCase.expected.properties, 'Properties were incorrectly encapsulated');
@@ -335,9 +335,9 @@ suite('FClass', function() {
 
 		var result;
 		assert.doesNotThrow(function(){
-			GrandParent = FClass(function(){}, {});
-			Parent = FClass(function(){}, GrandParent, {});
-			Child = FClass(function(){}, Parent, {});
+			GrandParent = ClassBuilder(function(){}, {});
+			Parent = ClassBuilder(function(){}, GrandParent, {});
+			Child = ClassBuilder(function(){}, Parent, {});
 
 			result = new Child();
 		});

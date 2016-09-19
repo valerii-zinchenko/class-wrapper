@@ -16,7 +16,7 @@ module.exports = function(grunt) {
 				banner: banner
 			},
 			dest: {
-				src: ['lib/utils.js', 'lib/FClass.js', 'lib/Class.js', 'lib/SingletonClass.js'],
+				src: ['lib/utils.js', 'lib/ClassBuilder.js', 'lib/Class.js', 'lib/SingletonClass.js'],
 				dest: 'dest/<%= pkg.name %>.js'
 			}
 		},
@@ -24,7 +24,7 @@ module.exports = function(grunt) {
 		wrap: {
 			amd: {
 				src: ['dest/<%= pkg.name %>.js'],
-				dest: 'dest/<%= pkg.name %>_amd.js',
+				dest: 'dest/<%= pkg.name %>.js',
 				options: {
 					wrapper: [
 						'(function (root, factory) {\n' +
@@ -39,7 +39,7 @@ module.exports = function(grunt) {
 						// code will be placed right here
 						'	return {\n' +
 						'		utils: utils,\n' +
-						'		FClass: FClass,\n' +
+						'		ClassBuilder: ClassBuilder,\n' +
 						'		Class: Class,\n' +
 						'		SingletonClass: SingletonClass\n' +
 						'	};\n' +
@@ -55,8 +55,7 @@ module.exports = function(grunt) {
 			},
 			dist: {
 				files: {
-					'dest/<%= pkg.name %>.min.js': 'dest/<%= pkg.name %>.js',
-					'dest/<%= pkg.name %>_amd.min.js': 'dest/<%= pkg.name %>_amd.js',
+					'dest/<%= pkg.name %>.min.js': 'dest/<%= pkg.name %>.js'
 				}
 			}
 		},
