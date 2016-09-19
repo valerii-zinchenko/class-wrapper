@@ -95,3 +95,7 @@ console.log(someSqrt.calcSquare());		// the square is: 25
 ```
 
 
+## Links
+* [API](http://valerii-zinchenko.github.io/class-wrapper/doc/index.html)
+* [Code coverage](http://valerii-zinchenko.github.io/class-wrapper/coverage/index.html)
+* [Run unit tests](http://valerii-zinchenko.github.io/class-wrapper/test/index.html)
