@@ -155,7 +155,7 @@ module.exports = function(grunt) {
 	[
 		['build', ['clean', 'concat', 'wrap', 'uglify', 'template:test']],
 		['test', ['template:test', 'mocha:test']],
-		['coverage', ['prepareForCoverage', 'template:coverage', 'mocha:coverage', 'clean:coverage']],
+		['coverage', ['prepareForCoverage', 'template:coverage', 'mocha:coverage', 'clean:coverage', 'template:test']],
 		['doc', ['jsdoc']]
 	].forEach(function(registry){
 		grunt.registerTask(registry[0], registry[1]);
