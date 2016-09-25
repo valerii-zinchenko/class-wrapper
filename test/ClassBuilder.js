@@ -26,35 +26,41 @@ suite('ClassBuilder', function() {
 						input: [type, {}]
 					}
 				}),
+				[undefined, false, 0, '', [], {}].map(function(type){
+					return {
+						title: 'type of class constructor: ' + Object.prototype.toString.call(type),
+						input: [function(){}, type, {}]
+					}
+				}),
 				[undefined, null, false, 1, '', [], function(){}].map(function(type){
 					return {
 						title: 'type of class properties: ' + Object.prototype.toString.call(type),
-						input: [function(){}, type]
+						input: [function(){}, null, type]
 					}
 				}),
 				[undefined, null, false, 1, '', [], {}].map(function(type){
 					return {
 						title: 'type of parent class: ' + Object.prototype.toString.call(type),
-						input: [function(){}, type, {}]
+						input: [function(){}, type, null, {}]
 					}
 				}),
 				[undefined, null, false, 1, '', []].map(function(type){
 					return {
 						title: 'type of being encapsulated class: ' + Object.prototype.toString.call(type),
-						input: [function(){}, function(){}, type, {}]
+						input: [function(){}, function(){}, type, null, {}]
 					}
 				}),
 				[undefined, null, false, 1, '', []].map(function(type){
 					return {
 						title: 'type of a third from four being encapsulated classes: ' + Object.prototype.toString.call(type),
-						input: [function(){}, function(){}, {}, function(){}, type, {}, {}]
+						input: [function(){}, function(){}, {}, function(){}, type, {}, null, {}]
 					}
 				})
 			).forEach(function(testCase){
 				test(testCase.title, function() {
 					assert.throw(function() {
 						ClassBuilder.apply(null, testCase.input);
-					}, Error, 'Incorrect input arguments. It should be: ClassBuilder(Function, [Function], [Function | Object]*, Object)');
+					}, Error, 'Incorrect input arguments. It should be: ClassBuilder(Function, [Function], [Function | Object]*, Function | null, Object)');
 				});
 			});
 		});
@@ -62,16 +68,28 @@ suite('ClassBuilder', function() {
 		suite('correct with', function() {
 			[
 				{
-					title: 'constructor function and object of properties and methods',
-					input: [function(){}, {}]
+					title: 'constructor function, without current class constructor function and object of properties and methods',
+					input: [function(){}, null, {}]
 				},
 				{
-					title: 'constructor function, parent class and object of properties and methods',
+					title: 'constructor function, current class constructor function and object of properties and methods',
 					input: [function(){}, function(){}, {}]
 				},
 				{
-					title: 'constructor function, parent class, objects/functions being encapsulated and object of properties and methods',
-					input: [function(){}, function(){}, {}, function(){}, {}, {}, {}]
+					title: 'constructor function, parent class, no current class constructor function and object of properties and methods',
+					input: [function(){}, function(){}, null, {}]
+				},
+				{
+					title: 'constructor function, parent class, current class constructor function and object of properties and methods',
+					input: [function(){}, function(){}, function(){}, {}]
+				},
+				{
+					title: 'constructor function, parent class, objects/functions being encapsulated, no current class constructor function and object of properties and methods',
+					input: [function(){}, function(){}, {}, function(){}, {}, {}, null, {}]
+				},
+				{
+					title: 'constructor function, parent class, objects/functions being encapsulated, current class constructor function and object of properties and methods',
+					input: [function(){}, function(){}, {}, function(){}, {}, {}, function(){}, {}]
 				}
 			].forEach(function(testCase){
 				test(testCase.title, function() {
@@ -87,17 +105,18 @@ suite('ClassBuilder', function() {
 		test('Cloning of a constructor function', function(){
 			var constructorFn = function(){};
 			var Parent = function(){};
+			var classConstrucor = function(){};
 
 			var result;
 			assert.doesNotThrow(function(){
-				result = ClassBuilder(constructorFn, Parent, {});
+				result = ClassBuilder(constructorFn, Parent, classConstrucor, {});
 			});
 
 			assert.notEqual(result, constructorFn, 'Resulting constructor function should not be equal to the input constructor function to avoid data sharing.');
-			assert.equal(result.parent, Parent.prototype, 'Reference to the prototype of a parent class is lost');
-			assert.equal(result.prototype.constructor, result, 'Class constructor function should be saved and used as constructor for a new class instead of a parent\'s constructor function');
+			assert.equal(result.prototype.constructor.__parent, Parent.prototype, 'Reference to the prototype of a parent class is lost');
+			assert.equal(result.prototype.__constructor, classConstrucor, 'Class constructor function should be saved and used as constructor for a new class instead of a parent\'s constructor function');
 			assert.instanceOf(result.prototype, Parent, 'New class prototype should be an instance of Parent class to save the inheritance chain');
-			assert.isObject(result.prototype._defaults, '"_defaults" should be created to store there the default values of own variables');
+			assert.isObject(result.prototype.__defaults, '"__defaults" should be created in scope of class constructor to store there the default values of own variables');
 		});
 
 		test('properties for a new class', function() {
@@ -118,26 +137,27 @@ suite('ClassBuilder', function() {
 
 			var result;
 			assert.doesNotThrow(function(){
-				result = ClassBuilder(function(){}, properties);
+				result = ClassBuilder(function(){}, function(){}, properties);
 			});
 
-			assert.equal(result.prototype._defaults.number, properties.number, 'Simple Number was incorrectly copied');
-			assert.equal(result.prototype._defaults.string, properties.string, 'Simple String was incorrectly copied');
-			assert.equal(result.prototype._defaults.bool, properties.bool, 'Simple boolean was incorrectly copied');
-			assert.isNull(result.prototype._defaults.nullValue, 'Null type was not copied');
+			var ref = result.prototype.constructor.prototype;
+			assert.equal(ref.__defaults.number, properties.number, 'Simple Number was incorrectly copied');
+			assert.equal(ref.__defaults.string, properties.string, 'Simple String was incorrectly copied');
+			assert.equal(ref.__defaults.bool, properties.bool, 'Simple boolean was incorrectly copied');
+			assert.isNull(ref.__defaults.nullValue, 'Null type was not copied');
 
-			assert.isArray(result.prototype._defaults.array, 'Array type was not copied');
-			assert.isTrue(result.prototype._defaults.array[0] === properties.array[0] && result.prototype._defaults.array[1] === properties.array[1], 'Array items was incorrectly copied');
+			assert.isArray(ref.__defaults.array, 'Array type was not copied');
+			assert.isTrue(ref.__defaults.array[0] === properties.array[0] && ref.__defaults.array[1] === properties.array[1], 'Array items was incorrectly copied');
 
-			assert.isObject(result.prototype._defaults.nestedObj, 'Object type was not saved');
-			assert.notEqual(result.prototype._defaults.nestedObj, properties.nestedObj, 'Object from a properties should be shared');
-			assert.isObject(result.prototype._defaults.nestedObj.innerObj, 'Inner object was not saved');
-			assert.notEqual(result.prototype._defaults.nestedObj.innerObj, properties.nestedObj.innerObj, 'Inner nested object from a properties should be shared');
-			assert.equal(result.prototype._defaults.nestedObj.innerObj.v, properties.nestedObj.innerObj.v, 'Value of most inner object was not copied');
-			assert.equal(result.prototype._defaults.nestedObj.prop, properties.nestedObj.prop, 'Object properties was incorrectly copied');
+			assert.isObject(ref.__defaults.nestedObj, 'Object type was not saved');
+			assert.notEqual(ref.__defaults.nestedObj, properties.nestedObj, 'Object from a properties should be shared');
+			assert.isObject(ref.__defaults.nestedObj.innerObj, 'Inner object was not saved');
+			assert.notEqual(ref.__defaults.nestedObj.innerObj, properties.nestedObj.innerObj, 'Inner nested object from a properties should be shared');
+			assert.equal(ref.__defaults.nestedObj.innerObj.v, properties.nestedObj.innerObj.v, 'Value of most inner object was not copied');
+			assert.equal(ref.__defaults.nestedObj.prop, properties.nestedObj.prop, 'Object properties was incorrectly copied');
 
-			assert.isFunction(result.prototype.fn, 'All functions should be saved in prototype for desired reuse');
-			assert.equal(result.prototype.fn, properties.fn, 'Functions should be shared');
+			assert.isFunction(ref.fn, 'All functions should be saved in prototype for desired reuse');
+			assert.equal(ref.fn, properties.fn, 'Functions should be shared');
 		});
 
 		suite('Encapsulate', function(){
@@ -148,11 +168,23 @@ suite('ClassBuilder', function() {
 
 			[
 				{
+					title: '"constructor", "__constructor" and "__parent" should be ignored',
+					input: [null, {
+						constructor: function(){},
+						__constructor: function(){},
+						__parent: {}
+					}],
+					expected: {
+						properties: {},
+						methods: {}
+					}
+				},
+				{
 					title: 'one simple object',
 					input: [{
 						prop: 'prop',
 						method: fns.method
-					}, {}],
+					}, null, {}],
 					expected: {
 						properties: {
 							prop: 'prop'
@@ -172,7 +204,7 @@ suite('ClassBuilder', function() {
 						{
 							prop2: 'PROP'
 						},
-					{}],
+					null, {}],
 					expected: {
 						properties: {
 							prop: 'prop',
@@ -199,7 +231,7 @@ suite('ClassBuilder', function() {
 								prp2: 'prp2'
 							},
 						},
-					{}],
+					null, {}],
 					expected: {
 						properties: {
 							prop: 'prop',
@@ -216,10 +248,10 @@ suite('ClassBuilder', function() {
 				},
 				{
 					title: 'one class created by ClassBuilder',
-					input: [ClassBuilder(function(){}, {
+					input: [ClassBuilder(function(){}, null, {
 						prop: 'prop',
 						method: fns.method
-					}), {}],
+					}), null, {}],
 					expected: {
 						properties: {
 							prop: 'prop'
@@ -231,7 +263,7 @@ suite('ClassBuilder', function() {
 				},
 				{
 					title: 'one object from "Encapsulate" property',
-					input: [{
+					input: [null, {
 						Encapsulate: {
 							prop: 'prop',
 							method: fns.method
@@ -248,7 +280,7 @@ suite('ClassBuilder', function() {
 				},
 				{
 					title: 'two objects from "Encapsulate" property',
-					input: [{
+					input: [null, {
 						Encapsulate: [
 							{
 								prop: 'prop',
@@ -283,6 +315,7 @@ suite('ClassBuilder', function() {
 							prop2: 'vv1',
 							method2: fns.method2
 						},
+						null,
 						{Encapsulate: [
 							{
 								prop: 'v3',
@@ -310,6 +343,8 @@ suite('ClassBuilder', function() {
 				}
 			].forEach(function(testCase){
 				test(testCase.title, function(){
+					// Add instance builder function and parent function.
+					// Parent function is added in order to not interpret any input cases as parent class
 					testCase.input.unshift(function(){}, function(){});
 
 					var result;
@@ -317,11 +352,12 @@ suite('ClassBuilder', function() {
 						result = ClassBuilder.apply(null, testCase.input);
 					});
 
-					assert.deepEqual(result.prototype._defaults, testCase.expected.properties, 'Properties were incorrectly encapsulated');
+					var ref = result.prototype;
+					assert.deepEqual(ref.__defaults, testCase.expected.properties, 'Properties were incorrectly encapsulated');
 
 					for (var method in testCase.expected.methods) {
-						assert.isFunction(result.prototype[method], method + ' was not encapsulated');
-						assert.equal(result.prototype[method], testCase.expected.methods[method], method + ' was incorrectly encapsulated');
+						assert.isFunction(ref[method], method + ' was not encapsulated');
+						assert.equal(ref[method], testCase.expected.methods[method], method + ' was incorrectly encapsulated');
 					};
 				});
 			});
@@ -335,9 +371,9 @@ suite('ClassBuilder', function() {
 
 		var result;
 		assert.doesNotThrow(function(){
-			GrandParent = ClassBuilder(function(){}, {});
-			Parent = ClassBuilder(function(){}, GrandParent, {});
-			Child = ClassBuilder(function(){}, Parent, {});
+			GrandParent = ClassBuilder(function(){}, function(){}, {});
+			Parent = ClassBuilder(function(){}, GrandParent, function(){}, {});
+			Child = ClassBuilder(function(){}, Parent, function(){}, {});
 
 			result = new Child();
 		});
