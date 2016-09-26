@@ -11,7 +11,7 @@
 suite('ClassBuilder', function() {
 	suite('Input arguments are', function() {
 		suite('incorrect when', function() {
-			[].concat([
+			[
 				{
 					title: 'No arguments',
 					input: []
@@ -19,16 +19,17 @@ suite('ClassBuilder', function() {
 				{
 					title: 'One argument',
 					input: [1]
-				}],
+				}
+			].concat(
 				[undefined, null, false, 1, '', [], {}].map(function(type){
 					return {
-						title: 'type of Constructor argument: ' + Object.prototype.toString.call(type),
+						title: 'type of instance builder function argument: ' + Object.prototype.toString.call(type),
 						input: [type, {}]
 					}
 				}),
 				[undefined, false, 0, '', [], {}].map(function(type){
 					return {
-						title: 'type of class constructor: ' + Object.prototype.toString.call(type),
+						title: 'type of constructor: ' + Object.prototype.toString.call(type),
 						input: [function(){}, type, {}]
 					}
 				}),
@@ -40,27 +41,15 @@ suite('ClassBuilder', function() {
 				}),
 				[undefined, null, false, 1, '', [], {}].map(function(type){
 					return {
-						title: 'type of parent class: ' + Object.prototype.toString.call(type),
+						title: 'type of a parent class: ' + Object.prototype.toString.call(type),
 						input: [function(){}, type, null, {}]
-					}
-				}),
-				[undefined, null, false, 1, '', []].map(function(type){
-					return {
-						title: 'type of being encapsulated class: ' + Object.prototype.toString.call(type),
-						input: [function(){}, function(){}, type, null, {}]
-					}
-				}),
-				[undefined, null, false, 1, '', []].map(function(type){
-					return {
-						title: 'type of a third from four being encapsulated classes: ' + Object.prototype.toString.call(type),
-						input: [function(){}, function(){}, {}, function(){}, type, {}, null, {}]
 					}
 				})
 			).forEach(function(testCase){
 				test(testCase.title, function() {
 					assert.throw(function() {
 						ClassBuilder.apply(null, testCase.input);
-					}, Error, 'Incorrect input arguments. It should be: ClassBuilder(Function, [Function], [Function | Object]*, Function | null, Object)');
+					}, Error, 'Incorrect input arguments. It should be: ClassBuilder(Function, [Function], Function | null, Object)');
 				});
 			});
 		});
@@ -95,6 +84,62 @@ suite('ClassBuilder', function() {
 				test(testCase.title, function() {
 					assert.doesNotThrow(function() {
 						ClassBuilder.apply(null, testCase.input);
+					});
+				});
+			});
+		});
+	});
+
+	suite('Encapsulated item is', function() {
+		suite('incorrect', function(){
+			[].concat(
+				[true, 1, 'a'].map(function(type){
+					return {
+						title: 'type of an "Encapsulate" property: ' + Object.prototype.toString.call(type),
+						input: type
+					}
+				}),
+				[undefined, null, false, 1, '', []].map(function(type){
+					return {
+						title: 'type of some item in an array: ' + Object.prototype.toString.call(type),
+						input: [function(){}, type, {}]
+					}
+				})
+			).forEach(function(testCase){
+				test(testCase.title, function(){
+					assert.throw(function(){
+						ClassBuilder.call(null, function(){}, null, {Encapsulate: testCase.input});
+					}, Error, 'Some of the items for encapsulation is incorrect. An item can be: Object, Function, Class');
+				});
+			});
+		});
+
+		suite('correct or ignored', function(){
+			[].concat(
+				[undefined, null, false, 0, ''].map(function(type){
+					return {
+						title: 'type of an "Encapsulate" property that should be ignored: ' + Object.prototype.toString.call(type),
+						input: type
+					}
+				}),
+				[function(){}, {}].map(function(type){
+					return {
+						title: 'type of an "Encapsulate" property: ' + Object.prototype.toString.call(type),
+						input: type
+					}
+				}),
+				{
+					title: 'an empty array of items',
+					input: []
+				},
+				{
+					title: 'an array of allowed types',
+					input: [function(){}, {}]
+				}
+			).forEach(function(testCase){
+				test(testCase.title, function(){
+					assert.doesNotThrow(function(){
+						ClassBuilder.call(null, function(){}, null, {Encapsulate: testCase.input});
 					});
 				});
 			});
@@ -172,71 +217,94 @@ suite('ClassBuilder', function() {
 					input: [null, {
 						constructor: function(){},
 						__constructor: function(){},
-						__parent: {}
+						__parent: {},
+						p0: 'p0'
 					}],
 					expected: {
-						properties: {},
+						properties: {
+							p0: 'p0'
+						},
 						methods: {}
 					}
 				},
 				{
 					title: 'one simple object',
-					input: [{
-						prop: 'prop',
-						method: fns.method
-					}, null, {}],
+					input: [null, {
+						Encapsulate: {
+							prop: 'prop',
+							method: fns.method
+						},
+						p0: 'p0',
+						method2: fns.method2
+					}],
 					expected: {
 						properties: {
+							p0: 'p0',
 							prop: 'prop'
 						},
 						methods: {
-							method: fns.method
+							method: fns.method,
+							method2: fns.method2
 						}
 					}
 				},
 				{
 					title: 'two simple objects',
-					input: [
-						{
-							prop: 'prop',
-							method: fns.method
-						},
-						{
-							prop2: 'PROP'
-						},
-					null, {}],
+					input: [null, {
+						Encapsulate: [
+							{
+								prop: 'prop',
+								method: fns.method
+							},
+							{
+								prop2: 'PROP'
+							}
+						],
+						p0: 'p0',
+						method2: fns.method2
+					}],
 					expected: {
 						properties: {
+							p0: 'p0',
 							prop: 'prop',
 							prop2: 'PROP'
 						},
 						methods: {
-							method: fns.method
+							method: fns.method,
+							method2: fns.method2
 						}
 					}
 				},
 				{
 					title: 'two simple objects with different properties of inner object',
-					input: [
-						{
-							prop: 'prop',
-							obj: {
-								prp: 'prp'
+					input: [null, {
+						Encapsulate: [
+							{
+								prop: 'prop',
+								obj: {
+									prp: 'prp'
+								},
+								method: fns.method
 							},
-							method: fns.method
-						},
-						{
-							prop2: 'PROP',
-							obj: {
-								prp2: 'prp2'
-							},
-						},
-					null, {}],
+							{
+								prop2: 'PROP',
+								obj: {
+									prp2: 'prp2'
+								},
+							}
+						],
+						p0: 'p0',
+						obj: {
+							p1: 'p1'
+						}
+					}],
 					expected: {
 						properties: {
+							p0: 'p0',
 							prop: 'prop',
 							prop2: 'PROP',
 							obj: {
+								p1: 'p1',
 								prp: 'prp',
 								prp2: 'prp2'
 							}
@@ -248,96 +316,20 @@ suite('ClassBuilder', function() {
 				},
 				{
 					title: 'one class created by ClassBuilder',
-					input: [ClassBuilder(function(){}, null, {
-						prop: 'prop',
-						method: fns.method
-					}), null, {}],
+					input: [null, {
+						Encapsulate: ClassBuilder(function(){}, null, {
+							prop: 'prop',
+							method: fns.method
+						}),
+						p0: 'p0'
+					}],
 					expected: {
 						properties: {
+							p0: 'p0',
 							prop: 'prop'
 						},
 						methods: {
 							method: fns.method
-						}
-					}
-				},
-				{
-					title: 'one object from "Encapsulate" property',
-					input: [null, {
-						Encapsulate: {
-							prop: 'prop',
-							method: fns.method
-						}
-					}],
-					expected: {
-						properties: {
-							prop: 'prop'
-						},
-						methods: {
-							method: fns.method
-						}
-					}
-				},
-				{
-					title: 'two objects from "Encapsulate" property',
-					input: [null, {
-						Encapsulate: [
-							{
-								prop: 'prop',
-								method: fns.method
-							},
-							{
-								prop2: 'prop2',
-								method2: fns.method2
-							}
-						]
-					}],
-					expected: {
-						properties: {
-							prop: 'prop',
-							prop2: 'prop2'
-						},
-						methods: {
-							method: fns.method,
-							method2: fns.method2
-						}
-					}
-				},
-				{
-					title: 'two objects over input arguments and two objects from "Encapsulate" property with interference (the last one should have a precedence)',
-					input: [
-						{
-							prop: 'v1',
-							method: fns.method
-						},
-						{
-							prop: 'v2',
-							prop2: 'vv1',
-							method2: fns.method2
-						},
-						null,
-						{Encapsulate: [
-							{
-								prop: 'v3',
-								prop3: 'vvv1',
-								method2: fns.method
-							},
-							{
-								prop2: 'vv2',
-								method: fns.method2,
-								method2: fns.method
-							}
-						]}
-					],
-					expected: {
-						properties: {
-							prop: 'v3',
-							prop2: 'vv2',
-							prop3: 'vvv1'
-						},
-						methods: {
-							method: fns.method2,
-							method2: fns.method
 						}
 					}
 				}
