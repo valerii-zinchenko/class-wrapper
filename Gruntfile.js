@@ -118,12 +118,19 @@ module.exports = function(grunt) {
 		},
 
 		jsdoc: {
+			options: {
+				configure: 'jsdoc.conf.json',
+			},
+
 			doc: {
 				src: ['./lib/*.js'],
 				options: {
-					destination: 'doc',
-					readme: 'README.md'
+					package: "package.json",
 				}
+			},
+
+			nightly: {
+				src: ['./lib/*.js'],
 			}
 		},
 
