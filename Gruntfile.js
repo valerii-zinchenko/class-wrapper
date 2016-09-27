@@ -22,7 +22,7 @@ module.exports = function(grunt) {
 		},
 
 		wrap: {
-			amd: {
+			pkg: {
 				src: ['dest/<%= pkg.name %>.js'],
 				dest: 'dest/<%= pkg.name %>.js',
 				options: {
@@ -33,7 +33,7 @@ module.exports = function(grunt) {
 						'	} else if(typeof module === "object" && module.exports) {\n' +
 						'		module.exports = factory();\n' +
 						'	} else {\n' +
-						'		root.classWrappers = factory();\n' +
+						'		root["<%= pkg.name %>"] = factory();\n' +
 						'	}\n' +
 						'})(this, function() {',
 						// code will be placed right here
@@ -172,7 +172,7 @@ module.exports = function(grunt) {
 
 
 	[
-		['build', ['clean', 'concat', 'wrap', 'uglify', 'template:test']],
+		['build', ['clean:build', 'concat', 'wrap', 'uglify', 'template:test']],
 		['test', ['template:test', 'mocha:test']],
 		['coverage', ['prepareForCoverage', 'template:coverage', 'mocha:coverage', 'clean:coverage', 'template:test']],
 		['doc', ['jsdoc']]
