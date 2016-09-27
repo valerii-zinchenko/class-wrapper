@@ -32,6 +32,10 @@ Available library files:
 1. `dest/class-wrapper.js` - not minified library package
 1. `dest/class-wrapper.min.js` - minified library package
 
+The destination library files are surrouned with the [universal module definition](https://github.com/umdjs/umd/). So it can be loaded
+- as a module for NodeJS
+- as an AMD module
+- or can be stored into the global variable under the name `"classr-wapper"`
 
 ## Simple usage examples
 
