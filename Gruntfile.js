@@ -64,6 +64,7 @@ module.exports = function(grunt) {
 			test: {
 				options: {
 					data: {
+						isPROD: false,
 						jsFolder: '../lib'
 					}
 				},
@@ -74,7 +75,18 @@ module.exports = function(grunt) {
 			coverage: {
 				options: {
 					data: {
+						isPROD: false,
 						jsFolder: '../js-cov'
+					}
+				},
+				files: {
+					'test/index.html': ['test/index.tpl.html']
+				}
+			},
+			'prod-test': {
+				options: {
+					data: {
+						isPROD: true
 					}
 				},
 				files: {

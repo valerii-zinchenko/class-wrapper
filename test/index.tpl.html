@@ -13,6 +13,9 @@
 <body>
 	<div id="mocha"></div>
 
+	<% if (isPROD) { %>
+	<script src="../dest/class-wrapper.min.js"></script>
+	<% } %>
 	<script type="text/javascript" charset="utf-8">
 		// polifill is from https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Function/bind
 		if (!Function.prototype.bind) {
@@ -67,9 +70,16 @@
 		];
 
 		// add lib files
+		<% if (isPROD) { %>
+		window.utils = classWrappers.utils;
+		window.ClassBuilder = classWrappers.ClassBuilder;
+		window.Class = classWrappers.Class;
+		window.SingletonClass = classWrappers.SingletonClass;
+		<% } else { %>
 		components.forEach(function(component) {
 			appendScript('<%= jsFolder %>/' + component + '.js');
 		});
+		<% } %>
 
 		// add test files
 		components.forEach(function(component) {
