@@ -1,7 +1,7 @@
 {
   "name": "class-wrapper",
   "version": "0.9.3",
-  "description": "Set of wrappers for easier creation of different kinds of classes",
+  "description": "Set of wrappers for easier definition of different kinds of classes",
   "main": "lib/ClassBuilder.js",
   "author": "Valerii Zinchenko",
   "license": "MIT",
