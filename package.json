@@ -7,6 +7,7 @@
   "license": "MIT",
   "repository": "valerii-zinchenko/class-wrapper",
   "scripts": {
+    "preversion": "grunt test",
     "prepublish": "grunt build"
   },
   "directories": {
