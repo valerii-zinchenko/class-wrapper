@@ -1,16 +1,17 @@
-# class-wrapper
+# {class}
 
-Set of wrappers for easier creation of different kind of classes. Currently there are three kinds of wrappers:
+Set of wrappers for easier definition of different kind of classes. Currently there are three kinds of wrappers:
 
 * `ClassBuilder` - the main wrapper that realize the inheritance and data encapsulation. It requires a function that defines how the instances will be created. It returns the clone of defined instance builder function with special features and properties.
-* `Class` - this has predefined wrapper instance builder function for `ClassBuilder`, that calls all parent's constructors first before calling the constructor of current class. For example there is `GrandParent` class, `Parent` class that is derived from `GrandParent` class and `Child` class that if derived from the `Parent` class. So when `new Child` will be called then the constructor of `GrandParent` class will be executed, then constructor from Parent class and finally the constructor of Child class.
-* `SingletonClass` - this has predefined wrapper instance builder function for `ClassBuilder`, that by any `new` always returns the same instance. It uses the same constructing routine as `Class` to create the first instance.
+* `Class` - it has predefined instance builder function for `ClassBuilder`, that calls all parent's constructors before calling the constructor of a new class
+* `SingletonClass` - it has predefined instance builder function for `ClassBuilder`, that by any `new` always returns the same instance. The first instance will be created in the same way as `Class`
 
 Each wrapper accepts:
 * the parent class from which a new class is going to be derived
+* constructor function for a new class
 * object of properties and methods for a new class
 
-Defined class properties are treated as default values for a new instance and they are isolated between instances, i.e. if some class has an object in properties, then each instance will have its own copy of that default object. Only methods are shared.
+Defined class properties are treated as default values for a new instance and they are isolated between instances. For example if some class has an object in properties then each instance will have its own copy of that default object. Only methods are shared.
 
 
 ## Requirements
@@ -35,7 +36,8 @@ Available library files:
 The destination library files are surrouned with the [universal module definition](https://github.com/umdjs/umd/). So it can be loaded
 - as a module for NodeJS
 - as an AMD module
-- or can be stored into the global variable under the name `"classr-wapper"`
+- or can be stored into the global variable under the name `"class-wapper"`
+
 
 ## Simple usage examples
 
@@ -94,6 +96,7 @@ console.log(someSqrt.calcSquare());		// the square is: 25
 
 
 ## Links
+* [wiki](https://github.com/valerii-zinchenko/class-wrapper/wiki)
 * [API](http://valerii-zinchenko.github.io/class-wrapper/doc/index.html)
 * [Code coverage](http://valerii-zinchenko.github.io/class-wrapper/coverage/index.html)
 * [Run unit tests](http://valerii-zinchenko.github.io/class-wrapper/test/index.html)
