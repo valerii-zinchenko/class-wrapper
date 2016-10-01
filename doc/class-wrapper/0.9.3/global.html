@@ -102,9 +102,8 @@
 
 
 <div class="description">
-    <p>Class
-This sets a simple wrapper under <a href="global.html#ParentConstructorFirst">ParentConstructorFirst</a> function as default instance builder function of <a href="global.html#ClassBuilder">ClassBuilder</a>.
-Simple wrapper function, not <a href="global.html#ParentConstructorFirst">ParentConstructorFirst</a> function directly, is used to not clone <a href="global.html#ParentConstructorFirst">ParentConstructorFirst</a> function. This allows the debugging of instance builder function.</p>
+    Class
+This binds Coreconstructor function into ClassBuilder function as the first argument, so it will accept the other arguments.
 </div>
 
 
@@ -142,7 +141,7 @@ Simple wrapper function, not <a href="global.html#ParentConstructorFirst">Parent
     
     <dt class="tag-source">Source:</dt>
     <dd class="tag-source"><ul class="dummy"><li>
-        <a href="Class.js.html">Class.js</a>, <a href="Class.js.html#line65">line 65</a>
+        <a href="Class.js.html">Class.js</a>, <a href="Class.js.html#line63">line 63</a>
     </li></ul></dd>
     
 
@@ -173,9 +172,9 @@ Simple wrapper function, not <a href="global.html#ParentConstructorFirst">Parent
 
 
 <div class="description">
-    <p>Singleton class
-This sets a default instance builder function of <a href="global.html#ClassBuilder">ClassBuilder</a> to achieve the behaviour of a singleton class.
-A creation of a first instance is controlled by <a href="global.html#ParentConstructorFirst">ParentConstructorFirst</a> function.</p>
+    Singleton Class
+This additionally wraps the <a href="global.html#CoreConstructor">CoreConstructor</a> to store and return already created instance.
+This binds addtional wrapper into ClassBuilder function as the first argument, so it will accept the other arguments.
 </div>
 
 
@@ -247,24 +246,23 @@ A creation of a first instance is controlled by <a href="global.html#ParentConst
 
     
 
-    <h4 class="name" id="ClassBuilder"><span class="type-signature"></span>ClassBuilder<span class="signature">(InstanceBuilder, Parent<span class="signature-attributes">opt</span>, Constructor, props)</span><span class="type-signature"> &rarr; {function}</span></h4>
+    <h4 class="name" id="ClassBuilder"><span class="type-signature"></span>ClassBuilder<span class="signature">(Constructor, Parent<span class="signature-attributes">opt</span>, props)</span><span class="type-signature"> &rarr; {function}</span></h4>
 
     
 
 
 
 <div class="description">
-    <p>Main class builder.
-It takes the constructor function and wraps it to add few automated processes for constructing a new class.</p>
-<p>Properties and features:</p>
-<ul>
-<li>set the parent class</li>
-<li>save the inheritance chain</li>
-<li>define the classes/functions/objects that are going to be encapsulated into the resulting class. The last encapsulated object will have a precndence over the previose objects, even parent class. Only the own properties of the new class will have the highest precedence</li>
-<li>the reference to the parent class is stored in 'parent' property</li>
-<li>inherited methods are stored in class prototype object</li>
-<li>store default class properties in '__default' object where the objects will be copied, not shared</li>
-</ul>
+    Main class builder.
+It takes the constructor function and wraps it to add few automated processes for constructing a new class.
+
+Properties and features:
+- set the parent class
+- save the inheritance chain
+- define the classes/functions/objects that are going to be encapsulated into the resulting class. The last encapsulated object will have a precndence over the previose objects, even parent class. Only the own properties of the new class will have the highest precedence
+- the reference to the parent class is stored in 'parent' property
+- inherited methods are stored in class prototype object
+- store default class properties in '_default' object where the objects will be copied, not shared
 </div>
 
 
@@ -304,7 +302,7 @@ It takes the constructor function and wraps it to add few automated processes fo
 
         <tr>
             
-                <td class="name"><code>InstanceBuilder</code></td>
+                <td class="name"><code>Constructor</code></td>
             
 
             <td class="type">
@@ -332,7 +330,7 @@ It takes the constructor function and wraps it to add few automated processes fo
                 </td>
             
 
-            <td class="description last"><p>Function that defines how instances will be created, how constructor(s) will be executed</p></td>
+            <td class="description last">Main class constructor subroutine.</td>
         </tr>
 
     
@@ -371,14 +369,14 @@ It takes the constructor function and wraps it to add few automated processes fo
                 </td>
             
 
-            <td class="description last"><p>Parent class</p></td>
+            <td class="description last">Parent class. Built-in 'Object' will be used if this argument will be omitted</td>
         </tr>
 
     
 
         <tr>
             
-                <td class="name"><code>Constructor</code></td>
+                <td class="name"><code>...rest</code></td>
             
 
             <td class="type">
@@ -387,7 +385,7 @@ It takes the constructor function and wraps it to add few automated processes fo
 <span class="param-type">function</span>
 |
 
-<span class="param-type">null</span>
+<span class="param-type">Object</span>
 
 
             
@@ -395,6 +393,8 @@ It takes the constructor function and wraps it to add few automated processes fo
 
             
                 <td class="attributes">
+                
+                    &lt;optional><br>
                 
 
                 
@@ -409,7 +409,7 @@ It takes the constructor function and wraps it to add few automated processes fo
                 </td>
             
 
-            <td class="description last"><p>Cconstructor function</p></td>
+            <td class="description last">Classes/function's/object's properties and methods of which will be encapsulated</td>
         </tr>
 
     
@@ -444,12 +444,7 @@ It takes the constructor function and wraps it to add few automated processes fo
                 </td>
             
 
-            <td class="description last"><p>Object of properties and methods for a new class. Property names that are used internally and will be ignored by encapsulation:</p>
-<ul>
-<li>__constructor</li>
-<li>__parent</li>
-</ul>
-<p>If some of the object has &quot;__defaults&quot; object, then all of it's properties will be treated as an object of default properties that a new class should have.</p>
+            <td class="description last">The last input argument. Defines the properties and methods for a new class
                 <h6>Properties</h6>
                 
 
@@ -486,12 +481,6 @@ It takes the constructor function and wraps it to add few automated processes fo
 <span class="param-type">Object</span>
 |
 
-<span class="param-type">function</span>
-|
-
-<span class="param-type"><a href="global.html#Class">Class</a></span>
-|
-
 <span class="param-type">Array</span>
 
 
@@ -512,7 +501,7 @@ It takes the constructor function and wraps it to add few automated processes fo
 
             
 
-            <td class="description last"><p>Define which object/function/class or an array of objects/functions/classes should be encapsulated into the new class</p></td>
+            <td class="description last">Define which object or an array of objects should be encapsulated into the new class</td>
         </tr>
 
     
@@ -560,7 +549,7 @@ It takes the constructor function and wraps it to add few automated processes fo
     
     <dt class="tag-source">Source:</dt>
     <dd class="tag-source"><ul class="dummy"><li>
-        <a href="ClassBuilder.js.html">ClassBuilder.js</a>, <a href="ClassBuilder.js.html#line49">line 49</a>
+        <a href="ClassBuilder.js.html">ClassBuilder.js</a>, <a href="ClassBuilder.js.html#line46">line 46</a>
     </li></ul></dd>
     
 
@@ -591,13 +580,13 @@ It takes the constructor function and wraps it to add few automated processes fo
 
 
 <h5>Throws:</h5>
-<ul>
-        <li>
+
+        
 
 <dl>
     <dt>
         <div class="param-desc">
-        <p>Incorrect input arguments. It should be: ClassBuilder(Function, [Function], Function | null, Object)</p>
+        Incorrect input arguments. It should be: ClassBuilder(Function, [Function], [Function | Object]*, Object)
         </div>
     </dt>
     <dd></dd>
@@ -617,42 +606,15 @@ It takes the constructor function and wraps it to add few automated processes fo
     <dd></dd>
 </dl>
 
-</li>
+
     
-        <li>
-
-<dl>
-    <dt>
-        <div class="param-desc">
-        <p>Some of the items for encapsulation is incorrect. An item can be: Object, Function, Class</p>
-        </div>
-    </dt>
-    <dd></dd>
-    <dt>
-        <dl>
-            <dt>
-                Type
-            </dt>
-            <dd>
-                
-<span class="param-type">Error</span>
-
-
-            </dd>
-        </dl>
-    </dt>
-    <dd></dd>
-</dl>
-
-</li>
-    </ul>
 
 
 <h5>Returns:</h5>
 
         
 <div class="param-desc">
-    <p>Class</p>
+    Class constructor
 </div>
 
 
@@ -678,16 +640,16 @@ It takes the constructor function and wraps it to add few automated processes fo
 
     
 
-    <h4 class="name" id="ParentConstructorFirst"><span class="type-signature"></span>ParentConstructorFirst<span class="signature">()</span><span class="type-signature"></span></h4>
+    <h4 class="name" id="CoreConstructor"><span class="type-signature"></span>CoreConstructor<span class="signature">()</span><span class="type-signature"></span></h4>
 
     
 
 
 
 <div class="description">
-    <p>Execute a parent's constructor before the current constructor.
-The behavior of this builder is similar to C++ - all parent constructors are executing first, starting from the root parent constructor and finishing with the constructor of a new class.
-Before the constructor's chain will be executed the new instance will be extended by &quot;__defaults&quot; properties.</p>
+    Core class constructor wrapper.
+This constructor function simulates the behavior of a constructor from C++ () - all parent constructors are executing first, starting from the root parent constructor and finishing with the constructor for the new class.
+Before the constructor's chain will be executed the new instance will be extended by "_default" properties.
 </div>
 
 
@@ -731,7 +693,7 @@ Before the constructor's chain will be executed the new instance will be extende
     
     <dt class="tag-source">Source:</dt>
     <dd class="tag-source"><ul class="dummy"><li>
-        <a href="Class.js.html">Class.js</a>, <a href="Class.js.html#line25">line 25</a>
+        <a href="Class.js.html">Class.js</a>, <a href="Class.js.html#line27">line 27</a>
     </li></ul></dd>
     
 
@@ -773,13 +735,13 @@ Before the constructor's chain will be executed the new instance will be extende
 </div>
 
 <nav>
-    <h2><a href="index.html">Home</a></h2><h3>Namespaces</h3><ul><li><a href="utils.html">utils</a></li></ul><h3>Global</h3><ul><li><a href="global.html#Class">Class</a></li><li><a href="global.html#ClassBuilder">ClassBuilder</a></li><li><a href="global.html#ParentConstructorFirst">ParentConstructorFirst</a></li><li><a href="global.html#SingletonClass">SingletonClass</a></li></ul>
+    <h2><a href="index.html">Home</a></h2><h3>Namespaces</h3><ul><li><a href="utils.html">utils</a></li></ul><h3>Global</h3><ul><li><a href="global.html#Class">Class</a></li><li><a href="global.html#ClassBuilder">ClassBuilder</a></li><li><a href="global.html#CoreConstructor">CoreConstructor</a></li><li><a href="global.html#SingletonClass">SingletonClass</a></li></ul>
 </nav>
 
 <br class="clear">
 
 <footer>
-    Documentation generated by <a href="https://github.com/jsdoc3/jsdoc">JSDoc 3.4.1</a> on Sat Oct 01 2016 23:16:07 GMT+0300 (EEST)
+    Documentation generated by <a href="https://github.com/jsdoc3/jsdoc">JSDoc 3.4.1</a> on Sun Oct 02 2016 00:26:27 GMT+0300 (EEST)
 </footer>
 
 <script> prettyPrint(); </script>

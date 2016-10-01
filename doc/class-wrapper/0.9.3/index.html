@@ -43,20 +43,20 @@
 
 
     <section>
-        <article><h1>class-wrapper</h1><p>Set of wrappers for easier creation of different kind of classes. Currently there are three kinds of wrappers:</p>
-<ul>
-<li><code>ClassBuilder</code> - the main wrapper that realize the inheritance and data encapsulation. It requires a function that defines how the instances will be created. It returns the clone of defined instance builder function with special features and properties.</li>
-<li><code>Class</code> - this has predefined wrapper instance builder function for <code>ClassBuilder</code>, that calls all parent's constructors first before calling the constructor of current class. For example there is <code>GrandParent</code> class, <code>Parent</code> class that is derived from <code>GrandParent</code> class and <code>Child</code> class that if derived from the <code>Parent</code> class. So when <code>new Child</code> will be called then the constructor of <code>GrandParent</code> class will be executed, then constructor from Parent class and finally the constructor of Child class.</li>
-<li><code>SingletonClass</code> - this has predefined wrapper instance builder function for <code>ClassBuilder</code>, that by any <code>new</code> always returns the same instance. It uses the same constructing routine as <code>Class</code> to create the first instance.</li>
-</ul>
+        <article><h1>class-wrapper</h1><p>Set of wrappers for easier constructing of different kind of classes. Currently there are three kinds of wrappers:</p>
+<ol>
+<li><code>ClassBuilder</code> - the main wrapper that realize the inheritance and data encapsulation. It requires a function that defines how the instances will be created. It returns the clone of defined constructor with special features and properties.</li>
+<li><code>Class</code> - this has predefined wrapper constructor function for <code>ClassBuilder</code> for creating an instances, that calls all parent's constructors first before calling the constructor of current class. For example there is <code>GrandParent</code> class, <code>Parent</code> class that is derived from <code>GrandParent</code> class and <code>Child</code> class that if derived from the <code>Parent</code> class. So when <code>new Child</code> will be called then the constructor of <code>GrandParent</code> class will be executed, then constructor from Parent class and finally the constructor of Child class.</li>
+<li><code>SingletonClass</code> - this has predefined wrapper constructor function for <code>ClassBuilder</code> for creating an instances, that by any <code>new</code> always returns the same instance. It uses the same constructing routine as <code>Class</code> to create the first instance.</li>
+</ol>
 <p>Each wrapper accepts:</p>
 <ul>
-<li>the parent class from which a new class is going to be derived</li>
+<li>the parent class from which a new class should be derived</li>
+<li>classes, functions and objects, properties and methods of which a new class should encapsulate</li>
 <li>object of properties and methods for a new class</li>
 </ul>
 <p>Defined class properties are treated as default values for a new instance and they are isolated between instances, i.e. if some class has an object in properties, then each instance will have its own copy of that default object. Only methods are shared.</p>
 <h2>Requirements</h2><ul>
-<li><a href="http://kangax.github.io/compat-table/es5/#test-Object.create">Object.create</a></li>
 <li><a href="http://caniuse.com/#feat=es5">Function.prototype.bind</a></li>
 <li><a href="http://caniuse.com/#feat=es5">Array.prototype.forEach</a></li>
 </ul>
@@ -67,30 +67,28 @@
 <li><code>dest/class-wrapper.js</code> - not minified library package</li>
 <li><code>dest/class-wrapper.min.js</code> - minified library package</li>
 </ol>
-<p>The destination library files are surrouned with the <a href="https://github.com/umdjs/umd/">universal module definition</a>. So it can be loaded</p>
-<ul>
-<li>as a module for NodeJS</li>
-<li>as an AMD module</li>
-<li>or can be stored into the global variable under the name <code>&quot;classr-wapper&quot;</code></li>
-</ul>
 <h2>Simple usage examples</h2><pre class="prettyprint source lang-js"><code>// Define a Figure class:
-var Figure = Class(function() {
-    console.log('Figure::initialize()');
-}, {
+var Figure = Class({
+    // this is a constructor
+    initialize: function() {
+        console.log('Figure::initialize()');
+    },
+
     // abstract function for a calculating a suqare of a figure
     calcSquare: function() {}
 });
 
 // Define Rectangle class derived from a Figure class:
-var Rectangle = Class(Figure, function(width, height) {
-    console.log('Rectangle::initialize()');
-
-    this._width = width;
-    this._height = height;
-}, {
+var Rectangle = Class(Figure, {
     _width: 0,
     _height: 0,
 
+    initialize: function(width, height) {
+        console.log('Rectangle::initialize()');
+
+        this._width = width;
+        this._height = height;
+    },
 
     // abstract function for a calculating a suqare of a figure
     calcSquare: function() {
@@ -99,10 +97,12 @@ var Rectangle = Class(Figure, function(width, height) {
 });
 
 // Define Square class as a special case of Rectangle:
-var Square = Class(Rectangle, function(length) {
-    console.log('Square::initialize()');
+var Square = Class(Rectangle, {
+    initialize: function(length) {
+        console.log('Square::initialize()');
 
-    this._height = length;
+        this._height = length;
+    }
 });
 
 
@@ -150,7 +150,7 @@ console.log(someSqrt.calcSquare());        // the square is: 25</code></pre><h2>
     <div class="container-overview">
     
         
-            <div class="description"><p>Implementation of a simple <a href="global.html#Class">class</a> wrapper</p></div>
+            <div class="description">Implementation of a C++-like <a href="global.html#Class">class</a></div>
         
 
         
@@ -158,6 +158,9 @@ console.log(someSqrt.calcSquare());        // the square is: 25</code></pre><h2>
 
 <dl class="details">
 
+    
+    <dt class="tag-version">Version:</dt>
+    <dd class="tag-version"><ul class="dummy"><li>1.1.2</li></ul></dd>
     
 
     
@@ -257,7 +260,7 @@ console.log(someSqrt.calcSquare());        // the square is: 25</code></pre><h2>
     <div class="container-overview">
     
         
-            <div class="description"><p>Implementation of <a href="global.html#ClassBuilder">ClassBuilder</a></p></div>
+            <div class="description">Implementation of <a href="global.html#ClassBuilder">ClassBuilder</a></div>
         
 
         
@@ -265,6 +268,9 @@ console.log(someSqrt.calcSquare());        // the square is: 25</code></pre><h2>
 
 <dl class="details">
 
+    
+    <dt class="tag-version">Version:</dt>
+    <dd class="tag-version"><ul class="dummy"><li>1.0.2</li></ul></dd>
     
 
     
@@ -364,7 +370,7 @@ console.log(someSqrt.calcSquare());        // the square is: 25</code></pre><h2>
     <div class="container-overview">
     
         
-            <div class="description"><p>Implementation of <a href="global.html#SingletonClass">singleton class</a> wrapper</p></div>
+            <div class="description">Implementation of <a href="global.html#SingletonClass">singleton class</a></div>
         
 
         
@@ -372,6 +378,9 @@ console.log(someSqrt.calcSquare());        // the square is: 25</code></pre><h2>
 
 <dl class="details">
 
+    
+    <dt class="tag-version">Version:</dt>
+    <dd class="tag-version"><ul class="dummy"><li>1.1.1</li></ul></dd>
     
 
     
@@ -471,7 +480,7 @@ console.log(someSqrt.calcSquare());        // the square is: 25</code></pre><h2>
     <div class="container-overview">
     
         
-            <div class="description"><p>It contains some <a href="utils.html">utility functions</a>.</p></div>
+            <div class="description">It contains some <a href="utils.html">utility functions</a>.</div>
         
 
         
@@ -479,6 +488,9 @@ console.log(someSqrt.calcSquare());        // the square is: 25</code></pre><h2>
 
 <dl class="details">
 
+    
+    <dt class="tag-version">Version:</dt>
+    <dd class="tag-version"><ul class="dummy"><li>1.1.0</li></ul></dd>
     
 
     
@@ -556,13 +568,13 @@ console.log(someSqrt.calcSquare());        // the square is: 25</code></pre><h2>
 </div>
 
 <nav>
-    <h2><a href="index.html">Home</a></h2><h3>Namespaces</h3><ul><li><a href="utils.html">utils</a></li></ul><h3>Global</h3><ul><li><a href="global.html#Class">Class</a></li><li><a href="global.html#ClassBuilder">ClassBuilder</a></li><li><a href="global.html#ParentConstructorFirst">ParentConstructorFirst</a></li><li><a href="global.html#SingletonClass">SingletonClass</a></li></ul>
+    <h2><a href="index.html">Home</a></h2><h3>Namespaces</h3><ul><li><a href="utils.html">utils</a></li></ul><h3>Global</h3><ul><li><a href="global.html#Class">Class</a></li><li><a href="global.html#ClassBuilder">ClassBuilder</a></li><li><a href="global.html#CoreConstructor">CoreConstructor</a></li><li><a href="global.html#SingletonClass">SingletonClass</a></li></ul>
 </nav>
 
 <br class="clear">
 
 <footer>
-    Documentation generated by <a href="https://github.com/jsdoc3/jsdoc">JSDoc 3.4.1</a> on Sat Oct 01 2016 23:16:07 GMT+0300 (EEST)
+    Documentation generated by <a href="https://github.com/jsdoc3/jsdoc">JSDoc 3.4.1</a> on Sun Oct 02 2016 00:26:27 GMT+0300 (EEST)
 </footer>
 
 <script> prettyPrint(); </script>
