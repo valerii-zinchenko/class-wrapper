@@ -1,20 +1,21 @@
-# class-wrapper
+# {class}
 
-Set of wrappers for easier constructing of different kind of classes. Currently there are three kinds of wrappers:
+Set of wrappers for easier definition of different kind of classes. Currently there are three kinds of wrappers:
 
-1. `ClassBuilder` - the main wrapper that realize the inheritance and data encapsulation. It requires a function that defines how the instances will be created. It returns the clone of defined constructor with special features and properties.
-1. `Class` - this has predefined wrapper constructor function for `ClassBuilder` for creating an instances, that calls all parent's constructors first before calling the constructor of current class. For example there is `GrandParent` class, `Parent` class that is derived from `GrandParent` class and `Child` class that if derived from the `Parent` class. So when `new Child` will be called then the constructor of `GrandParent` class will be executed, then constructor from Parent class and finally the constructor of Child class.
-1. `SingletonClass` - this has predefined wrapper constructor function for `ClassBuilder` for creating an instances, that by any `new` always returns the same instance. It uses the same constructing routine as `Class` to create the first instance.
+* `ClassBuilder` - the main wrapper that realize the inheritance and data encapsulation. It requires a function that defines how the instances will be created. It returns the clone of defined instance builder function with special features and properties.
+* `Class` - it has predefined instance builder function for `ClassBuilder`, that calls all parent's constructors before calling the constructor of a new class
+* `SingletonClass` - it has predefined instance builder function for `ClassBuilder`, that by any `new` always returns the same instance. The first instance will be created in the same way as `Class`
 
 Each wrapper accepts:
-* the parent class from which a new class should be derived
-* classes, functions and objects, properties and methods of which a new class should encapsulate
+* the parent class from which a new class is going to be derived
+* constructor function for a new class
 * object of properties and methods for a new class
 
-Defined class properties are treated as default values for a new instance and they are isolated between instances, i.e. if some class has an object in properties, then each instance will have its own copy of that default object. Only methods are shared.
+Defined class properties are treated as default values for a new instance and they are isolated between instances. For example if some class has an object in properties then each instance will have its own copy of that default object. Only methods are shared.
 
 
 ## Requirements
+* [Object.create](http://kangax.github.io/compat-table/es5/#test-Object.create)
 * [Function.prototype.bind](http://caniuse.com/#feat=es5)
 * [Array.prototype.forEach](http://caniuse.com/#feat=es5)
 
@@ -32,32 +33,33 @@ Available library files:
 1. `dest/class-wrapper.js` - not minified library package
 1. `dest/class-wrapper.min.js` - minified library package
 
+The destination library files are surrouned with the [universal module definition](https://github.com/umdjs/umd/). So it can be loaded
+- as a module for NodeJS
+- as an AMD module
+- or can be stored into the global variable under the name `"class-wapper"`
+
 
 ## Simple usage examples
 
 ```js
 // Define a Figure class:
-var Figure = Class({
-	// this is a constructor
-	initialize: function() {
-		console.log('Figure::initialize()');
-	},
-	
+var Figure = Class(function() {
+	console.log('Figure::initialize()');
+}, {
 	// abstract function for a calculating a suqare of a figure
 	calcSquare: function() {}
 });
 
 // Define Rectangle class derived from a Figure class:
-var Rectangle = Class(Figure, {
+var Rectangle = Class(Figure, function(width, height) {
+	console.log('Rectangle::initialize()');
+
+	this._width = width;
+	this._height = height;
+}, {
 	_width: 0,
 	_height: 0,
 
-	initialize: function(width, height) {
-		console.log('Rectangle::initialize()');
-
-		this._width = width;
-		this._height = height;
-	},
 	
 	// abstract function for a calculating a suqare of a figure
 	calcSquare: function() {
@@ -66,12 +68,10 @@ var Rectangle = Class(Figure, {
 });
 
 // Define Square class as a special case of Rectangle:
-var Square = Class(Rectangle, {
-	initialize: function(length) {
-		console.log('Square::initialize()');
+var Square = Class(Rectangle, function(length) {
+	console.log('Square::initialize()');
 
-		this._height = length;
-	}
+	this._height = length;
 });
 
 
@@ -95,3 +95,8 @@ console.log(someSqrt.calcSquare());		// the square is: 25
 ```
 
 
+## Links
+* [wiki](https://github.com/valerii-zinchenko/class-wrapper/wiki)
+* [API](http://valerii-zinchenko.github.io/class-wrapper/doc/index.html)
+* [Code coverage](http://valerii-zinchenko.github.io/class-wrapper/coverage/index.html)
+* [Run unit tests](http://valerii-zinchenko.github.io/class-wrapper/test/index.html)

@@ -3,26 +3,24 @@
 
  See the file LICENSE.txt for copying permission.
 
- All source files are available at: http://github.com/valerii-zinchenko/cpp-class
+ All source files are available at: http://github.com/valerii-zinchenko/class-wrapper
 */
 
 
-suite('Class', function() {
+suite('Instance from a Class', function() {
 	test('creating an instance without any specified constructor', function(){
 		assert.doesNotThrow(function(){
-			new (Class({}));
+			new (Class(null, {}));
 		});
 	});
 
 	test('calling of specific constructor', function() {
 		var spy = sinon.spy();
 		assert.doesNotThrow(function() {
-			new (Class({
-				initialize: spy
-			}))();
+			new (Class(spy, {}))();
 		});
 
-		assert.isTrue(spy.calledOnce, 'initialize() is treated as a specific class constructor and it should be called by creating new class instance');
+		assert.isTrue(spy.calledOnce, 'constructor is treated as a specific class constructor and it should be called by creating new class instance');
 	});
 
 	test('Class should always produce a new instance', function() {
@@ -30,7 +28,7 @@ suite('Class', function() {
 		var inst2;
 
 		assert.doesNotThrow(function(){
-			var Obj = Class({});
+			var Obj = Class(null, {});
 
 			inst1 = new Obj();
 			inst2 = new Obj();
@@ -44,7 +42,7 @@ suite('Class', function() {
 		var obj2;
 
 		assert.doesNotThrow(function(){
-			var Obj = Class({
+			var Obj = Class(null, {
 				obj: {}
 			});
 
@@ -52,7 +50,7 @@ suite('Class', function() {
 			obj2 = new Obj();
 		});
 
-		assert.notEqual(obj1.obj, obj2.obj, 'Object under property name "obj" should clonned');
+		assert.notEqual(obj1.obj, obj2.obj, 'Object under property name "obj" should not be shared between instances');
 	});
 
 	test('Constructor chain', function(){
@@ -64,16 +62,10 @@ suite('Class', function() {
 
 		var result;
 		assert.doesNotThrow(function(){
-			var GrandParentClass = Class({
-				initialize: grandParentConstructor
-			});
-			var ParentClass = Class(GrandParentClass, {
-				initialize: parentConstructor
-			});
-			var ClassWithoutSpecificConstructor = Class(ParentClass, {});
-			var ChildClass = Class(ClassWithoutSpecificConstructor, {
-				initialize: childConstructor
-			});
+			var GrandParentClass = Class(grandParentConstructor, {});
+			var ParentClass = Class(GrandParentClass, parentConstructor, {});
+			var ClassWithoutSpecificConstructor = Class(ParentClass, null, {});
+			var ChildClass = Class(ClassWithoutSpecificConstructor, childConstructor, {});
 
 			result = new ChildClass(arg0, arg1);
 		});
@@ -97,9 +89,9 @@ suite('Class', function() {
 
 		var result;
 		assert.doesNotThrow(function(){
-			GrandParentClass = Class({});
-			ParentClass = Class(GrandParentClass, {});
-			ChildClass = Class(ParentClass, {});
+			GrandParentClass = Class(function(){}, {});
+			ParentClass = Class(GrandParentClass, function(){}, {});
+			ChildClass = Class(ParentClass, function(){}, {});
 
 			result = new ChildClass();
 		});

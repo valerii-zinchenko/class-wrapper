@@ -3,26 +3,24 @@
 
  See the file LICENSE.txt for copying permission.
 
- All source files are available at: http://github.com/valerii-zinchenko/cpp-class
+ All source files are available at: http://github.com/valerii-zinchenko/class-wrapper
 */
 
 
-suite('SingletonClass', function() {
+suite('Instance from a SingletonClass', function() {
 	test('creating an instance without any specified constructor', function(){
 		assert.doesNotThrow(function(){
-			new (SingletonClass({}));
+			new (SingletonClass(null, {}));
 		});
 	});
 
 	test('calling of specific constructor', function() {
 		var spy = sinon.spy();
 		assert.doesNotThrow(function() {
-			new (SingletonClass({
-				initialize: spy
-			}))();
+			new (SingletonClass(spy, {}))();
 		});
 
-		assert.isTrue(spy.calledOnce, 'initialize() is treated as a specific class constructor and it should be called by creating new class instance');
+		assert.isTrue(spy.calledOnce, 'constructor is treated as a specific class constructor and it should be called by creating new class instance');
 	});
 
 	test('SingletonClass class should always produce the same instance', function() {
@@ -31,9 +29,7 @@ suite('SingletonClass', function() {
 		var inst2;
 
 		assert.doesNotThrow(function(){
-			var Obj = SingletonClass({
-				initialize: constructorFn
-			});
+			var Obj = SingletonClass(constructorFn, {});
 
 			inst1 = new Obj();
 			inst2 = new Obj();
@@ -43,20 +39,16 @@ suite('SingletonClass', function() {
 		assert.isTrue(constructorFn.calledOnce, 'ScingletonClass should call constructor only once, then it should return already created instance');
 	});
 
-	test('Calling of parent initialize()', function() {
+	test('Calling of parent constructor', function() {
 		var value = 11,
 			k = 4;
 
-		var Parent = new SingletonClass({
-			initialize: function() {
-				this.value = value;
-			}
-		});
-		var Child = new SingletonClass(Parent, {
-			initialize: function() {
-				this.value *= k;
-			}
-		});
+		var Parent = new SingletonClass(function() {
+			this.value = value;
+		}, {});
+		var Child = new SingletonClass(Parent, function() {
+			this.value *= k;
+		}, {});
 
 		assert.equal((new Child()).value, value*k);
 	});
@@ -68,9 +60,9 @@ suite('SingletonClass', function() {
 
 		var result;
 		assert.doesNotThrow(function(){
-			GrandParentClass = SingletonClass({});
-			ParentClass = Class(GrandParentClass, {});
-			ChildClass = Class(ParentClass, {});
+			GrandParentClass = SingletonClass(null, {});
+			ParentClass = Class(GrandParentClass, null, {});
+			ChildClass = Class(ParentClass, null, {});
 
 			result = new ChildClass();
 		});
@@ -85,8 +77,8 @@ suite('SingletonClass', function() {
 		var childInst;
 
 		assert.doesNotThrow(function(){
-			var Parent = SingletonClass({});
-			var Child = SingletonClass(Parent, {});
+			var Parent = SingletonClass(null, {});
+			var Child = SingletonClass(Parent, null, {});
 
 			parentInst = new Parent();
 			childInst = new Child();

@@ -3,8 +3,8 @@ module.exports = function(grunt) {
 
 	var banner = '// <%= pkg.description %>\n'+
 				 '// v<%= pkg.version %>\n' +
-				 '// Copyright (c) 2016  Valerii Zinchenko\n' +
-				 '// License: http://valerii-zinchenko.github.io/<%= pkg.name %>/LICENSE.txt\n' +
+				 '// Copyright (c) 2016 <%= pkg.author %>\n' +
+				 '// License: <%= pkg.license %> http://valerii-zinchenko.github.io/<%= pkg.name %>/LICENSE.txt\n' +
 				 '// All source files are available at: http://github.com/<%= pkg.repository %>\n';
 
 	grunt.initConfig({
@@ -22,7 +22,7 @@ module.exports = function(grunt) {
 		},
 
 		wrap: {
-			amd: {
+			pkg: {
 				src: ['dest/<%= pkg.name %>.js'],
 				dest: 'dest/<%= pkg.name %>.js',
 				options: {
@@ -33,7 +33,7 @@ module.exports = function(grunt) {
 						'	} else if(typeof module === "object" && module.exports) {\n' +
 						'		module.exports = factory();\n' +
 						'	} else {\n' +
-						'		root.classWrappers = factory();\n' +
+						'		root["<%= pkg.name %>"] = factory();\n' +
 						'	}\n' +
 						'})(this, function() {',
 						// code will be placed right here
@@ -64,6 +64,7 @@ module.exports = function(grunt) {
 			test: {
 				options: {
 					data: {
+						isPROD: false,
 						jsFolder: '../lib'
 					}
 				},
@@ -74,7 +75,18 @@ module.exports = function(grunt) {
 			coverage: {
 				options: {
 					data: {
+						isPROD: false,
 						jsFolder: '../js-cov'
+					}
+				},
+				files: {
+					'test/index.html': ['test/index.tpl.html']
+				}
+			},
+			'prod-test': {
+				options: {
+					data: {
+						isPROD: true
 					}
 				},
 				files: {
@@ -118,12 +130,19 @@ module.exports = function(grunt) {
 		},
 
 		jsdoc: {
+			options: {
+				configure: 'jsdoc.conf.json',
+			},
+
 			doc: {
 				src: ['./lib/*.js'],
 				options: {
-					destination: 'doc',
-					readme: 'README.md'
+					package: "package.json",
 				}
+			},
+
+			nightly: {
+				src: ['./lib/*.js'],
 			}
 		},
 
@@ -153,9 +172,9 @@ module.exports = function(grunt) {
 
 
 	[
-		['build', ['clean', 'concat', 'wrap', 'uglify', 'template:test']],
+		['build', ['clean:build', 'concat', 'wrap', 'uglify', 'template:test']],
 		['test', ['template:test', 'mocha:test']],
-		['coverage', ['prepareForCoverage', 'template:coverage', 'mocha:coverage', 'clean:coverage']],
+		['coverage', ['prepareForCoverage', 'template:coverage', 'mocha:coverage', 'clean:coverage', 'template:test']],
 		['doc', ['jsdoc']]
 	].forEach(function(registry){
 		grunt.registerTask(registry[0], registry[1]);

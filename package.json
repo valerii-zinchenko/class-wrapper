@@ -1,12 +1,13 @@
 {
   "name": "class-wrapper",
-  "version": "0.9.1",
-  "description": "Set of wrappers for easier creation of different kinds of classes",
-  "main": "lib/FClass.js",
+  "version": "1.0.0",
+  "description": "Set of wrappers for easier definition of different kinds of classes",
+  "main": "lib/ClassBuilder.js",
   "author": "Valerii Zinchenko",
   "license": "MIT",
   "repository": "valerii-zinchenko/class-wrapper",
   "scripts": {
+    "preversion": "grunt test",
     "prepublish": "grunt build"
   },
   "directories": {
