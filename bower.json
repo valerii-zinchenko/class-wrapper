@@ -1,0 +1,35 @@
+{
+  "name": "class-wrapper",
+  "description": "Set of wrappers for easier definition of different kinds of classes",
+  "main": [
+    "dest/class-wrapper.js",
+    "dest/class-wrapper.min.js"
+  ],
+  "moduleType": [
+    "globals",
+    "amd",
+    "node"
+  ],
+  "authors": [
+    "Valerii Zinchenko"
+  ],
+  "license": "MIT",
+  "keywords": [
+    "class",
+    "js"
+  ],
+  "homepage": "http://valerii-zinchenko.github.io/class-wrapper/doc/index.html",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/valerii-zinchenko/class-wrapper"
+  },
+  "ignore": [
+    "**/.*",
+    "node_modules",
+    "bower_components",
+    "test",
+    "doc",
+    "coverage",
+    "js-cov"
+  ]
+}
