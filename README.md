@@ -36,7 +36,7 @@ Available library files:
 The destination library files are surrouned with the [universal module definition](https://github.com/umdjs/umd/). So it can be loaded
 - as a module for NodeJS
 - as an AMD module
-- or can be stored into the global variable under the name `"class-wapper"`
+- or will be stored into the global variable under the name `"class-wapper"`
 
 
 ## Simple usage examples
