@@ -33,10 +33,10 @@ Available library files:
 1. `dest/class-wrapper.js` - not minified library package
 1. `dest/class-wrapper.min.js` - minified library package
 
-The destination library files are surrouned with the [universal module definition](https://github.com/umdjs/umd/). So it can be loaded
+The destination library files are surrounded with the [universal module definition](https://github.com/umdjs/umd/). So it can be loaded
 - as a module for NodeJS
 - as an AMD module
-- or can be stored into the global variable under the name `"class-wapper"`
+- or will be stored into the global variable under the name `"class-wapper"`
 
 
 ## Simple usage examples
@@ -47,7 +47,7 @@ var Figure = Class(function() {
 	console.log('Figure::initialize()');
 }, {
 	// abstract function for a calculating a suqare of a figure
-	calcSquare: function() {}
+	calcArea: function() {}
 });
 
 // Define Rectangle class derived from a Figure class:
@@ -60,9 +60,7 @@ var Rectangle = Class(Figure, function(width, height) {
 	_width: 0,
 	_height: 0,
 
-	
-	// abstract function for a calculating a suqare of a figure
-	calcSquare: function() {
+	calcArea: function() {
 		return this._width * this._height;
 	}
 });
@@ -81,7 +79,7 @@ var someRect = new Rectangle(2, 4);
 //	Figure::initialize()
 //	Rectangle::initialize()
 
-console.log(someRect.calcSquare());		// the square is: 8
+console.log(someRect.calcArea());		// the square is: 8
 
 
 // Create a square with an edge length 5
@@ -91,7 +89,7 @@ var someSqrt = new Square(5);
 //	Rectangle::initialize()
 //	Square::initialize()
 
-console.log(someSqrt.calcSquare());		// the square is: 25
+console.log(someSqrt.calcArea());		// the square is: 25
 ```
 
 
