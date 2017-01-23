@@ -3,8 +3,8 @@ module.exports = function(grunt) {
 
 	var banner = '// <%= pkg.description %>\n'+
 				 '// v<%= pkg.version %>\n' +
-				 '// Copyright (c) 2016 <%= pkg.author %>\n' +
-				 '// License: <%= pkg.license %> http://valerii-zinchenko.github.io/<%= pkg.name %>/LICENSE.txt\n' +
+				 '// Copyright (c) 2016-2017 <%= pkg.author %>\n' +
+				 '// Licensed under MIT (https://github.com/valerii-zinchenko/<%= pkg.name %>/blob/master/LICENSE.txt)\n' +
 				 '// All source files are available at: http://github.com/<%= pkg.repository %>\n';
 
 	grunt.initConfig({
