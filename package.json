@@ -5,7 +5,10 @@
   "main": "dest/class-wrapper.js",
   "author": "Valerii Zinchenko",
   "license": "MIT",
-  "repository": "valerii-zinchenko/class-wrapper",
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/valerii-zinchenko/class-wrapper.git"
+  },
   "scripts": {
     "preversion": "grunt test",
     "prepublish": "grunt build"
@@ -28,5 +31,13 @@
     "load-grunt-tasks": "^3.5.2",
     "mocha": "^3.0.2",
     "sinon": "^1.17.5"
-  }
+  },
+  "bugs": {
+    "url": "https://github.com/valerii-zinchenko/class-wrapper/issues"
+  },
+  "homepage": "https://github.com/valerii-zinchenko/class-wrapper#readme",
+  "keywords": [
+    "javascript",
+    "class"
+  ]
 }
