@@ -2,6 +2,7 @@
 **/*.swp
 
 # exclude files
+package-lock.json
 npm-debug.log
 test/index.html
 
