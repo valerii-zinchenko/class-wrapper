@@ -29,7 +29,7 @@ module.exports = function(grunt) {
 					wrapper: [
 						'(function (root, factory) {\n' +
 						'	if(typeof define === "function" && define.amd) {\n' +
-						'		define([], factory);\n' +
+						'		define("<%= pkg.name %>", [], factory);\n' +
 						'	} else if(typeof module === "object" && module.exports) {\n' +
 						'		module.exports = factory();\n' +
 						'	} else {\n' +
