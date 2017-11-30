@@ -79,7 +79,7 @@ var someRect = new Rectangle(2, 4);
 //	Figure::initialize()
 //	Rectangle::initialize()
 
-console.log(someRect.calcArea());		// the square is: 8
+console.log(someRect.calcArea());		// the area is: 8
 
 
 // Create a square with an edge length 5
@@ -89,7 +89,7 @@ var someSqrt = new Square(5);
 //	Rectangle::initialize()
 //	Square::initialize()
 
-console.log(someSqrt.calcArea());		// the square is: 25
+console.log(someSqrt.calcArea());		// the area is: 25
 ```
 
 
