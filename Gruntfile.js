@@ -16,35 +16,19 @@ module.exports = function(grunt) {
 				banner: banner
 			},
 			dest: {
-				src: ['lib/utils.js', 'lib/ClassBuilder.js', 'lib/Class.js', 'lib/SingletonClass.js'],
+				src: ['lib/utils.js', 'lib/ClassBuilder.js', 'lib/Class.js', 'lib/SingletonClass.js', 'lib/index.js'],
 				dest: 'dest/<%= pkg.name %>.js'
 			}
 		},
 
-		wrap: {
+		umd: {
 			pkg: {
-				src: ['dest/<%= pkg.name %>.js'],
-				dest: 'dest/<%= pkg.name %>.js',
 				options: {
-					wrapper: [
-						'(function (root, factory) {\n' +
-						'	if(typeof define === "function" && define.amd) {\n' +
-						'		define("<%= pkg.name %>", [], factory);\n' +
-						'	} else if(typeof module === "object" && module.exports) {\n' +
-						'		module.exports = factory();\n' +
-						'	} else {\n' +
-						'		root["<%= pkg.name %>"] = factory();\n' +
-						'	}\n' +
-						'})(this, function() {',
-						// code will be placed right here
-						'	return {\n' +
-						'		utils: utils,\n' +
-						'		ClassBuilder: ClassBuilder,\n' +
-						'		Class: Class,\n' +
-						'		SingletonClass: SingletonClass\n' +
-						'	};\n' +
-						'});'
-					]
+					src: ['dest/<%= pkg.name %>.js'],
+					dest: 'dest/<%= pkg.name %>.js',
+					template: 'umd.hbs',
+					objectToExport: 'ClassWrapper',
+					globalAlias: 'class-wrapper'
 				}
 			}
 		},
@@ -172,7 +156,7 @@ module.exports = function(grunt) {
 
 
 	[
-		['build', ['clean:build', 'concat', 'wrap', 'uglify', 'template:test']],
+		['build', ['clean:build', 'concat', 'umd', 'uglify', 'template:test']],
 		['test', ['template:test', 'mocha:test']],
 		['coverage', ['prepareForCoverage', 'template:coverage', 'mocha:coverage', 'clean:coverage', 'template:test']],
 		['doc', ['jsdoc']]
