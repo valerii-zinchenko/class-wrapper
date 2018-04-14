@@ -15,7 +15,7 @@
     "doc": "grunt doc",
     "coverage": "grunt coverage",
     "preversion": "npm test",
-    "prepublishOnly": "npm build"
+    "prepublishOnly": "npm run build"
   },
   "directories": {
     "test": "test"
