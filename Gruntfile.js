@@ -127,6 +127,9 @@ module.exports = function(grunt) {
 
 			nightly: {
 				src: ['./lib/*.js'],
+				options: {
+					destination: 'doc/nightly'
+				}
 			}
 		},
 
