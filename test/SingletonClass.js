@@ -1,12 +1,3 @@
-/*
- Copyright (c) 2016  Valerii Zinchenko
-
- See the file LICENSE.txt for copying permission.
-
- All source files are available at: http://github.com/valerii-zinchenko/class-wrapper
-*/
-
-
 suite('Instance from a SingletonClass', function() {
 	test('creating an instance without any specified constructor', function(){
 		assert.doesNotThrow(function(){

@@ -1,13 +1,3 @@
-/*
- Copyright (c) 2016  Valerii Zinchenko
-
- See the file LICENSE.txt for copying permission.
-
- All source files are available at: http://github.com/valerii-zinchenko/class-wrapper
-*/
-
-'use strict';
-
 suite('ClassBuilder', function() {
 	suite('Input arguments are', function() {
 		suite('incorrect when', function() {
@@ -192,17 +182,30 @@ suite('ClassBuilder', function() {
 			assert.isNull(ref.__defaults.nullValue, 'Null type was not copied');
 
 			assert.isArray(ref.__defaults.array, 'Array type was not copied');
-			assert.isTrue(ref.__defaults.array[0] === properties.array[0] && ref.__defaults.array[1] === properties.array[1], 'Array items was incorrectly copied');
+			assert.isTrue(ref.__defaults.array[0] === properties.array[0] && ref.__defaults.array[1] === properties.array[1], 'Array items were incorrectly copied');
 
 			assert.isObject(ref.__defaults.nestedObj, 'Object type was not saved');
-			assert.notEqual(ref.__defaults.nestedObj, properties.nestedObj, 'Object from a properties should be shared');
+			assert.notEqual(ref.__defaults.nestedObj, properties.nestedObj, 'Object from a properties should not be shared');
 			assert.isObject(ref.__defaults.nestedObj.innerObj, 'Inner object was not saved');
-			assert.notEqual(ref.__defaults.nestedObj.innerObj, properties.nestedObj.innerObj, 'Inner nested object from a properties should be shared');
+			assert.notEqual(ref.__defaults.nestedObj.innerObj, properties.nestedObj.innerObj, 'Inner nested object from a properties should not be shared');
 			assert.equal(ref.__defaults.nestedObj.innerObj.v, properties.nestedObj.innerObj.v, 'Value of most inner object was not copied');
 			assert.equal(ref.__defaults.nestedObj.prop, properties.nestedObj.prop, 'Object properties was incorrectly copied');
 
-			assert.isFunction(ref.fn, 'All functions should be saved in prototype for desired reuse');
+			assert.isFunction(ref.fn, 'All functions should be saved in prototype for reuse');
 			assert.equal(ref.fn, properties.fn, 'Functions should be shared');
+		});
+
+		test('define a name of the class', function() {
+			var name = "NamedClass";
+
+			var result;
+			assert.doesNotThrow(function(){
+				result = ClassBuilder(function(){}, function(){}, {
+					__name: name
+				});
+			});
+
+			assert.equal(result.name, name);
 		});
 
 		suite('Encapsulate', function(){

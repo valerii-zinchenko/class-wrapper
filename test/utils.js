@@ -1,12 +1,3 @@
-/*
- Copyright (c) 2016  Valerii Zinchenko
-
- See the file LICENSE.txt for copying permission.
-
- All source files are available at: http://github.com/valerii-zinchenko/class-wrapper
-*/
-
-
 suite('utils', function() {
 	suite('Object manipulations.', function() {
 		var v1 = 11,
