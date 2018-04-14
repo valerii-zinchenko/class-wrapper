@@ -1,11 +1,12 @@
 module.exports = function(grunt) {
 	require('load-grunt-tasks')(grunt);
 
-	var banner = '// <%= pkg.description %>\n'+
-				 '// v<%= pkg.version %>\n' +
-				 '// Copyright (c) 2016-2017 <%= pkg.author %>\n' +
+	var banner = '' +
+				 '// <%= pkg.name %> v<%= pkg.version %>\n' +
+				 '// <%= pkg.description %>\n' +
+				 '// Copyright (c) 2016-<%= new Date().getUTCFullYear() %> <%= pkg.author %>\n' +
 				 '// Licensed under MIT (https://github.com/valerii-zinchenko/<%= pkg.name %>/blob/master/LICENSE.txt)\n' +
-				 '// All source files are available at: http://github.com/<%= pkg.repository %>\n';
+				 '// All source files are available at: http://github.com/<%= pkg.name %>\n';
 
 	grunt.initConfig({
 		pkg: grunt.file.readJSON('package.json'),
