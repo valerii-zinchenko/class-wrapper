@@ -46,7 +46,7 @@ The destination library files are surrounded with the [universal module definiti
 var Figure = Class(function() {
 	console.log('Figure::initialize()');
 }, {
-	// abstract function for a calculating a suqare of a figure
+	// abstract function for a calculating an area of a figure
 	calcArea: function() {}
 });
 
@@ -95,6 +95,6 @@ console.log(someSqrt.calcArea());		// the area is: 25
 
 ## Links
 * [wiki](https://github.com/valerii-zinchenko/class-wrapper/wiki)
-* [API](http://valerii-zinchenko.github.io/class-wrapper/doc/index.html)
+* [API](http://valerii-zinchenko.github.io/class-wrapper/doc/nightly/index.html)
 * [Code coverage](http://valerii-zinchenko.github.io/class-wrapper/coverage/index.html)
 * [Run unit tests](http://valerii-zinchenko.github.io/class-wrapper/test/index.html)
