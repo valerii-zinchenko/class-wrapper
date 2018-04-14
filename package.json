@@ -10,9 +10,12 @@
     "url": "git+https://github.com/valerii-zinchenko/class-wrapper.git"
   },
   "scripts": {
-    "preversion": "grunt test",
-    "prepublish": "grunt build",
-    "build": "grunt build"
+    "test": "grunt test",
+    "build": "grunt build",
+    "doc": "grunt doc",
+    "coverage": "grunt coverage",
+    "preversion": "npm test",
+    "prepublishOnly": "npm build"
   },
   "directories": {
     "test": "test"
