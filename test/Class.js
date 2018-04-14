@@ -1,12 +1,3 @@
-/*
- Copyright (c) 2016-2017  Valerii Zinchenko
-
- Licensed under MIT (https://github.com/valerii-zinchenko/class-wrapper/blob/master/LICENSE.txt)
-
- All source files are available at: http://github.com/valerii-zinchenko/class-wrapper
-*/
-
-
 suite('Instance from a Class', function() {
 	test('creating an instance without any specified constructor', function(){
 		assert.doesNotThrow(function(){

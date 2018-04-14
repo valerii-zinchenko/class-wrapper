@@ -1,13 +1,3 @@
-/*
- Copyright (c) 2016-2017  Valerii Zinchenko
-
- Licensed under MIT (https://github.com/valerii-zinchenko/class-wrapper/blob/master/LICENSE.txt)
-
- All source files are available at: http://github.com/valerii-zinchenko/class-wrapper
-*/
-
-'use strict';
-
 suite('ClassBuilder', function() {
 	suite('Input arguments are', function() {
 		suite('incorrect when', function() {
